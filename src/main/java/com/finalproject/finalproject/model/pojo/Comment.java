@@ -16,6 +16,7 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false )
     private int id;
     private String text;
     private LocalDateTime postedDate;
@@ -26,6 +27,6 @@ public class Comment {
     @JoinColumn(name = "workman_id",nullable = false)
     private User workmanId;
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(foreignKey = @ForeignKey(name = "parent_comment_id"))
     private Comment parentComment;
 }

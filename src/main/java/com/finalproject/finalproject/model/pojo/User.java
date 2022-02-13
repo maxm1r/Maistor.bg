@@ -1,11 +1,13 @@
 package com.finalproject.finalproject.model.pojo;
 
+import com.finalproject.finalproject.model.dto.UserRegisterRequestDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,10 +24,22 @@ public class User {
     private String email;
     private String password;
     private boolean isWorkman;
-    private String profile_picture;
+    private String profilePicture;
     private String phoneNumber;
     @ManyToMany(mappedBy = "users")
-    ArrayList<Category> categories;
+    private Set<Category> categories;
+
+    public User(UserRegisterRequestDTO dto){
+        this.firstName = dto.getFirstName();
+        this.lastName = dto.getLastName();
+        this.email = dto.getEmail();
+        this.password = dto.getPassword();
+        this.phoneNumber = dto.getPhoneNumber();
+        this.isWorkman = dto.isWorkman();
+        if (this.isWorkman && dto.getCategories() != null) {
+            this.categories.addAll(dto.getCategories());
+        }
+    }
 
 
 }
