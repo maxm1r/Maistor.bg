@@ -27,7 +27,5 @@ public class UserRegisterRequestDTO {
     @JsonProperty
     private boolean isWorkman;
     private String phoneNumber;
-    @Nullable
-    private Set<Category> categories;
 
 }

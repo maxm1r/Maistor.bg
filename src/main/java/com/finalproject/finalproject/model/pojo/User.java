@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -29,15 +30,15 @@ public class User {
     @ManyToMany(mappedBy = "users")
     private Set<Category> categories;
 
-    public User(UserRegisterRequestDTO dto){
+    public User(UserRegisterRequestDTO dto) {
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();
         this.email = dto.getEmail();
         this.password = dto.getPassword();
         this.phoneNumber = dto.getPhoneNumber();
         this.isWorkman = dto.isWorkman();
-        if (this.isWorkman && dto.getCategories() != null) {
-            this.categories.addAll(dto.getCategories());
+        if (isWorkman) {
+            this.categories = new HashSet<Category>();
         }
     }
 

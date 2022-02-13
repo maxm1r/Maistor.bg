@@ -26,6 +26,7 @@ public class UserService {
         if (userRepository.findByEmail(registerDTO.getEmail()) != null){
             throw  new BadRequestException("Email already exist");
         }
+        // TODO real email verification , real password verification, phone verification
         User user = new User(registerDTO);
         user = userRepository.save(user);
         return new UserRegisterResponseDTO(user);

@@ -27,7 +27,6 @@ public class UserRegisterResponseDTO {
     private String email;
     private boolean isWorkman;
     private String phoneNumber;
-    private Set<Category> categories;
 
     public UserRegisterResponseDTO(User user){
         this.id = user.getId();
@@ -36,7 +35,6 @@ public class UserRegisterResponseDTO {
         this.email = user.getEmail();
         this.isWorkman = user.isWorkman();
         this.phoneNumber = user.getPhoneNumber();
-        this.categories = user.getCategories();
     }
 }
 
