@@ -1,11 +1,14 @@
 package com.finalproject.finalproject.model.pojo;
 
+import com.finalproject.finalproject.model.dto.CategoryDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,7 +28,11 @@ public class Category {
             joinColumns = { @JoinColumn(name ="workman_id") },
             inverseJoinColumns = { @JoinColumn(name = "category_id") }
     )
-    private List<User> users;
+    private Set<User> users;
 
 
+    public Category(CategoryDTO dto){
+        this.categoryName = dto.getCategoryName();
+        this.users = new HashSet<User>();
+    }
 }
