@@ -19,19 +19,25 @@ public class CategoryService {
     @Autowired
     ModelMapper modelMapper;
 
-    public Category addToDB(CategoryDTO dto) {
-        if (dto.getCategoryName() == null) {
+    public Category addToDB(String categoryName) {
+        if (categoryName.trim().equals("")) {
          throw new BadRequestException("Invalid name for category");
         }
-        Category category = modelMapper.map(dto,Category.class);
+        if (categoryRepository.existsByCategoryName(categoryName)){
+            throw new BadRequestException("This category already exists");
+        }
+        Category category = new Category();
+        category.setCategoryName(categoryName);
         category = categoryRepository.save(category);
         return category;
     }
     @Transactional
-    public Category deleteFromDB(CategoryDTO category) {
-        if (!categoryRepository.existsByCategoryName(category.getCategoryName())){
+    public Category deleteFromDB(String categoryName) {
+        if (!categoryRepository.existsByCategoryName(categoryName)){
             throw new BadRequestException("No category with that name");
         }
-        return categoryRepository.removeCategoriesByCategoryName(category.getCategoryName());
+        Category category = categoryRepository.getByCategoryName(categoryName);
+        categoryRepository.deleteAllByCategoryName(categoryName);
+        return category;
     }
 }

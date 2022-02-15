@@ -18,14 +18,14 @@ public class CategoryController extends AbstractController {
     CategoryService categoryService;
 
     @PostMapping("/category/{categoryName}")
-    public ResponseEntity<Category> addCategoryToDB(@PathVariable("categoryName") CategoryDTO dto){
-        return ResponseEntity.ok(categoryService.addToDB(dto));
+    public ResponseEntity<Category> addCategoryToDB(@PathVariable("categoryName") String categoryName){
+        return ResponseEntity.ok(categoryService.addToDB(categoryName));
     }
+
     @DeleteMapping("/category/{categoryName}")
-    public ResponseEntity<Category> deleteCategoryFromDB(@PathVariable("categoryName") CategoryDTO dto) {
+    public ResponseEntity<Category> deleteCategoryFromDB(@PathVariable("categoryName") String categoryName) {
 
-          return ResponseEntity.ok(categoryService.deleteFromDB(dto));
-
+          return ResponseEntity.ok(categoryService.deleteFromDB(categoryName));
     }
 }
 

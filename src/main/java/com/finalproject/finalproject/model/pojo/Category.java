@@ -30,9 +30,4 @@ public class Category {
     )
     private Set<User> users = new HashSet<>();
 
-
-    public Category(CategoryDTO dto){
-        this.categoryName = dto.getCategoryName();
-        this.users = new HashSet<User>();
-    }
 }
