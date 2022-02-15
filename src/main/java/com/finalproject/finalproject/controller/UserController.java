@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,6 +56,24 @@ public class UserController extends AbstractController {
         User user = userService.getUserByID(id);
         UserWithoutPasswordDTO dto = modelMapper.map(user,UserWithoutPasswordDTO.class);
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("user/all")
+    public ResponseEntity<List<UserWithoutPasswordDTO>> getAllUsers(){
+        List<User> users = userService.getAllUsers();
+        List<UserWithoutPasswordDTO> userWithoutPasswordDTOS = users.stream()
+                .map(element ->modelMapper.map(element,UserWithoutPasswordDTO.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(userWithoutPasswordDTOS);
+    }
+
+    @GetMapping("user/allWorkMans")
+    public ResponseEntity<List<UserWithoutPasswordDTO>> getAllWorkmans(){
+        Collection<User> users = userService.getAllWorkmans();
+        List<UserWithoutPasswordDTO> userWithoutPasswordDTOS = users.stream()
+                .map(element -> modelMapper.map(element,UserWithoutPasswordDTO.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(userWithoutPasswordDTOS);
     }
 
     @PutMapping("/user")

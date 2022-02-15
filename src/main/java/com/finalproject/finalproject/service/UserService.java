@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -103,5 +101,21 @@ public class UserService {
             throw new BadRequestException("There is no user with id:"+id);
         }
         return user;
+    }
+
+    public List<User> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        if (users.isEmpty()){
+            throw new BadRequestException("There are no users in the DB");
+        }
+        return users;
+    }
+
+    public Collection<User> getAllWorkmans() {
+        Collection<User> users = userRepository.findAllWorkmans();
+        if (users.isEmpty()){
+            throw new BadRequestException("There are not workMans in the DB");
+        }
+        return users;
     }
 }
