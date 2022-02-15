@@ -96,4 +96,12 @@ public class UserService {
         user = userRepository.save(user);
         return user;
     }
+
+    public User getUserByID(int id) {
+        User user = userRepository.getById(id);
+        if (user == null){
+            throw new BadRequestException("There is no user with id:"+id);
+        }
+        return user;
+    }
 }

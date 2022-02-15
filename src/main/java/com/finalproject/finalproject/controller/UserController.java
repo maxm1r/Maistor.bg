@@ -50,6 +50,13 @@ public class UserController extends AbstractController {
         return  ResponseEntity.ok(usersForReturn);
     }
 
+    @GetMapping("/user/{id}")
+    public ResponseEntity<UserWithoutPasswordDTO> getUserByID(@PathVariable int id){
+        User user = userService.getUserByID(id);
+        UserWithoutPasswordDTO dto = modelMapper.map(user,UserWithoutPasswordDTO.class);
+        return ResponseEntity.ok(dto);
+    }
+
     @PutMapping("/user")
     public ResponseEntity<EditUserDTO> editUser(@RequestBody EditUserDTO dto){
         User user = userService.edinUser(dto);
