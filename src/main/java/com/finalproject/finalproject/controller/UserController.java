@@ -1,9 +1,6 @@
 package com.finalproject.finalproject.controller;
 
-import com.finalproject.finalproject.model.dto.CategoryDTO;
-import com.finalproject.finalproject.model.dto.UserRegisterRequestDTO;
-import com.finalproject.finalproject.model.dto.UserRegisterResponseDTO;
-import com.finalproject.finalproject.model.dto.UserWithoutPasswordDTO;
+import com.finalproject.finalproject.model.dto.*;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.service.UserService;
@@ -45,13 +42,19 @@ public class UserController extends AbstractController {
         return ResponseEntity.ok(userWithoutPasswordDTO);
     }
 
-    @GetMapping("/user/category")
-    public ResponseEntity<Set<UserWithoutPasswordDTO>> getUsersForCategory(@RequestBody CategoryDTO dto){
-        Set<UserWithoutPasswordDTO> usersForReturn = userService.getAllUsersForCategory(dto.getCategoryName())
+    @GetMapping("/user/category/{categoryName}")
+    public ResponseEntity<Set<UserWithoutPasswordDTO>> getUsersForCategory(@PathVariable String categoryName){
+        Set<UserWithoutPasswordDTO> usersForReturn = userService.getAllUsersForCategory(categoryName)
                 .stream().map(element -> modelMapper.map(element, UserWithoutPasswordDTO.class))
                 .collect(Collectors.toSet());
-
         return  ResponseEntity.ok(usersForReturn);
+    }
+
+    @PutMapping("/user")
+    public ResponseEntity<EditUserDTO> editUser(@RequestBody EditUserDTO dto){
+        User user = userService.edinUser(dto);
+        EditUserDTO dtoForReturn = modelMapper.map(user,EditUserDTO.class);
+        return ResponseEntity.ok(dtoForReturn);
     }
 
 }

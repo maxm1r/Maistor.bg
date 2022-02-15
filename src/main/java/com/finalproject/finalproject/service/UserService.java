@@ -1,10 +1,7 @@
 package com.finalproject.finalproject.service;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
-import com.finalproject.finalproject.model.dto.CategoryDTO;
-import com.finalproject.finalproject.model.dto.UserRegisterRequestDTO;
-import com.finalproject.finalproject.model.dto.UserRegisterResponseDTO;
-import com.finalproject.finalproject.model.dto.UserWithoutPasswordDTO;
+import com.finalproject.finalproject.model.dto.*;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.CategoryRepository;
@@ -46,9 +43,8 @@ public class UserService {
         user = userRepository.save(user);
         return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
-
+    @Transactional
     public User addCategory(int id, String categoryName) {
-
         User user = userRepository.findById(id).orElse(null);
         Category category = categoryRepository.getByCategoryName(categoryName);
         if (user == null){
@@ -88,5 +84,16 @@ public class UserService {
         Set<User> users = userRepository.getAllByCategoriesContaining(category);
 
         return users;
+    }
+
+    public User edinUser(EditUserDTO dto) {
+        User user = userRepository.getById(dto.getId());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setEmail(dto.getEmail());
+        user.setPhoneNumber(dto.getPhoneNumber());
+        user.setProfilePicture(dto.getProfilePicture());
+        user = userRepository.save(user);
+        return user;
     }
 }

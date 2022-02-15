@@ -10,5 +10,5 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
     public boolean existsByCategoryName(String name);
     public int removeCategoriesByCategoryName(String categoryName);
     public Category getByCategoryName(String categoryName);
-
+    void deleteAllByCategoryName(String categoryName);
 }
