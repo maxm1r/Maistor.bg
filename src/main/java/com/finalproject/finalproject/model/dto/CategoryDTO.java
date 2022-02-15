@@ -1,5 +1,6 @@
 package com.finalproject.finalproject.model.dto;
 
+import com.finalproject.finalproject.model.pojo.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,12 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class CategoryDTO {
 
+    private int id;
     private String categoryName;
+
+    public CategoryDTO(Category category){
+        this.id = category.getId();
+        this.categoryName = category.getCategoryName();
+    }
 
 }

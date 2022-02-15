@@ -1,5 +1,6 @@
 package com.finalproject.finalproject.model.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.finalproject.finalproject.model.dto.CategoryDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,6 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,13 +22,13 @@ public class Category {
     private int id;
     private String categoryName;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinTable(
             name="workman_qualification" ,
             joinColumns = { @JoinColumn(name ="workman_id") },
             inverseJoinColumns = { @JoinColumn(name = "category_id") }
     )
-    private Set<User> users;
+    private Set<User> users = new HashSet<>();
 
 
     public Category(CategoryDTO dto){

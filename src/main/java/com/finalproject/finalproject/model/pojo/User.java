@@ -1,5 +1,6 @@
 package com.finalproject.finalproject.model.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.finalproject.finalproject.model.dto.UserRegisterRequestDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+@JsonIgnoreProperties(value = {"hibernateLazyInitializer","handler"})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,7 +30,7 @@ public class User {
     private String profilePicture;
     private String phoneNumber;
     @ManyToMany(mappedBy = "users")
-    private Set<Category> categories;
+    private Set<Category> categories = new HashSet<>();
 
     public User(UserRegisterRequestDTO dto) {
         this.firstName = dto.getFirstName();
@@ -37,9 +39,7 @@ public class User {
         this.password = dto.getPassword();
         this.phoneNumber = dto.getPhoneNumber();
         this.isWorkman = dto.isWorkman();
-        if (isWorkman) {
-            this.categories = new HashSet<Category>();
-        }
+        this.categories = new HashSet<Category>();
     }
 
 
