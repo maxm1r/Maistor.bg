@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 public interface CategoryRepository extends JpaRepository<Category,Integer> {
 
     public boolean existsByCategoryName(String name);
-    public void removeCategoriesByCategoryName(String categoryName);
+    public Category removeCategoriesByCategoryName(String categoryName);
     public Category getByCategoryName(String categoryName);
 
 }

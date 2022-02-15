@@ -4,6 +4,7 @@ import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.model.dto.CategoryDTO;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.repositories.CategoryRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,24 +16,22 @@ public class CategoryService {
 
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    ModelMapper modelMapper;
 
     public Category addToDB(CategoryDTO dto) {
-        if (dto.getCategoryName() != null){
-            Category category = new Category(dto);
-            category = categoryRepository.save(category);
-            return category;
+        if (dto.getCategoryName() == null) {
+         throw new BadRequestException("Invalid name for category");
         }
-        else throw new BadRequestException("Invalid name for category");
+        Category category = modelMapper.map(dto,Category.class);
+        category = categoryRepository.save(category);
+        return category;
     }
     @Transactional
-    public ResponseEntity<Long> deleteFromDB(CategoryDTO dto) {
-        if (!categoryRepository.existsByCategoryName(dto.getCategoryName())){
+    public Category deleteFromDB(CategoryDTO category) {
+        if (!categoryRepository.existsByCategoryName(category.getCategoryName())){
             throw new BadRequestException("No category with that name");
         }
-        else{
-            categoryRepository.removeCategoriesByCategoryName(dto.getCategoryName());
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-
+        return categoryRepository.removeCategoriesByCategoryName(category.getCategoryName());
     }
 }

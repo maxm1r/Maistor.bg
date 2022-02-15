@@ -10,8 +10,14 @@ import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.CategoryRepository;
 import com.finalproject.finalproject.model.repositories.UserRepository;
 import com.finalproject.finalproject.utility.UserUtility;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -20,6 +26,9 @@ public class UserService {
     UserRepository userRepository;
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    ModelMapper modelMapper;
+
 
     public UserRegisterResponseDTO register(UserRegisterRequestDTO registerDTO) {
 
@@ -33,15 +42,15 @@ public class UserService {
             throw  new BadRequestException("Email already exist");
         }
         // TODO real email verification , real password verification, phone verification
-        User user = new User(registerDTO);
+        User user = modelMapper.map(registerDTO,User.class);
         user = userRepository.save(user);
-        return new UserRegisterResponseDTO(user);
+        return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
 
-    public UserWithoutPasswordDTO addCategory(int id, CategoryDTO dto) {
+    public User addCategory(int id, String categoryName) {
 
         User user = userRepository.findById(id).orElse(null);
-        Category category = categoryRepository.getByCategoryName(dto.getCategoryName());
+        Category category = categoryRepository.getByCategoryName(categoryName);
         if (user == null){
             throw new BadRequestException("There is no user with that id");
         }
@@ -59,17 +68,25 @@ public class UserService {
         category.getUsers().add(user);
         user = userRepository.save(user);
         category = categoryRepository.save(category);
-        return new UserWithoutPasswordDTO(user);
+        return  user;
     }
 
-    public UserWithoutPasswordDTO removeCategory(int id, CategoryDTO dto){
+    @Transactional
+    public User removeCategory(int id, String categoryName){
         User user = userRepository.findById(id).orElse(null);
-        Category category = categoryRepository.getByCategoryName(dto.getCategoryName());
+        Category category = categoryRepository.getByCategoryName(categoryName);
         // TODO some validiations
         user.getCategories().remove(category);
         category.getUsers().remove(user);
         user = userRepository.save(user);
         category = categoryRepository.save(category);
-        return new UserWithoutPasswordDTO(user);
+        return user;
+    }
+
+    public Set<User> getAllUsersForCategory(String categoryName) {
+        Category category = categoryRepository.getByCategoryName(categoryName);
+        Set<User> users = userRepository.getAllByCategoriesContaining(category);
+
+        return users;
     }
 }
