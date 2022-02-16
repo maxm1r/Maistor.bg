@@ -25,62 +25,42 @@ public class UserController extends AbstractController {
 
     @PostMapping("/user")
     public ResponseEntity<UserRegisterResponseDTO> register(@RequestBody UserRegisterRequestDTO registerDTO){
-        UserRegisterResponseDTO responseDTO = userService.register(registerDTO);
-        return ResponseEntity.ok(responseDTO);
+        return ResponseEntity.ok(userService.register(registerDTO));
     }
 
     @PostMapping("/user/category/{id}")
-    public ResponseEntity<UserWithoutPasswordDTO> addCategory(@PathVariable int id , @RequestBody CategoryDTO dto){
-        User user = userService.addCategory(id,dto.getCategoryName());
-        UserWithoutPasswordDTO userWithoutPasswordDTO = modelMapper.map(user,UserWithoutPasswordDTO.class);
-        return ResponseEntity.ok(userWithoutPasswordDTO);
+    public ResponseEntity<UserWithoutPasswordDTO> addCategory(@PathVariable int id , @RequestBody String categoryName){
+        return ResponseEntity.ok(userService.addCategory(id,categoryName));
     }
 
     @DeleteMapping("/user/category/{id}")
-    public ResponseEntity<UserWithoutPasswordDTO> removeCategory(@PathVariable int id, @RequestBody CategoryDTO dto){
-        User user  = userService.removeCategory(id,dto.getCategoryName());
-        UserWithoutPasswordDTO userWithoutPasswordDTO = modelMapper.map(user,UserWithoutPasswordDTO.class);
-        return ResponseEntity.ok(userWithoutPasswordDTO);
+    public ResponseEntity<UserWithoutPasswordDTO> removeCategory(@PathVariable int id, @RequestBody String categoryName){
+        return ResponseEntity.ok(userService.removeCategory(id,categoryName));
     }
 
     @GetMapping("/user/category/{categoryName}")
     public ResponseEntity<Set<UserWithoutPasswordDTO>> getUsersForCategory(@PathVariable String categoryName){
-        Set<UserWithoutPasswordDTO> usersForReturn = userService.getAllUsersForCategory(categoryName)
-                .stream().map(element -> modelMapper.map(element, UserWithoutPasswordDTO.class))
-                .collect(Collectors.toSet());
-        return  ResponseEntity.ok(usersForReturn);
+        return  ResponseEntity.ok(userService.getAllUsersForCategory(categoryName));
     }
 
     @GetMapping("/user/{id}")
     public ResponseEntity<UserWithoutPasswordDTO> getUserByID(@PathVariable int id){
-        User user = userService.getUserByID(id);
-        UserWithoutPasswordDTO dto = modelMapper.map(user,UserWithoutPasswordDTO.class);
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(userService.getUserByID(id));
     }
 
     @GetMapping("user/all")
-    public ResponseEntity<List<UserWithoutPasswordDTO>> getAllUsers(){
-        List<User> users = userService.getAllUsers();
-        List<UserWithoutPasswordDTO> userWithoutPasswordDTOS = users.stream()
-                .map(element ->modelMapper.map(element,UserWithoutPasswordDTO.class))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(userWithoutPasswordDTOS);
+    public ResponseEntity<Set<UserWithoutPasswordDTO>> getAllUsers(){
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("user/allWorkMans")
-    public ResponseEntity<List<UserWithoutPasswordDTO>> getAllWorkmans(){
-        Collection<User> users = userService.getAllWorkmans();
-        List<UserWithoutPasswordDTO> userWithoutPasswordDTOS = users.stream()
-                .map(element -> modelMapper.map(element,UserWithoutPasswordDTO.class))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(userWithoutPasswordDTOS);
+    public ResponseEntity<Set<UserWithoutPasswordDTO>> getAllWorkmans(){
+        return ResponseEntity.ok(userService.getAllWorkmans());
     }
 
     @PutMapping("/user")
     public ResponseEntity<EditUserDTO> editUser(@RequestBody EditUserDTO dto){
-        User user = userService.edinUser(dto);
-        EditUserDTO dtoForReturn = modelMapper.map(user,EditUserDTO.class);
-        return ResponseEntity.ok(dtoForReturn);
+        return ResponseEntity.ok(userService.edinUser(dto));
     }
 
 }

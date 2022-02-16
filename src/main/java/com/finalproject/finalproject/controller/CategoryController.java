@@ -24,7 +24,6 @@ public class CategoryController extends AbstractController {
 
     @DeleteMapping("/category/{categoryName}")
     public ResponseEntity<Category> deleteCategoryFromDB(@PathVariable("categoryName") String categoryName) {
-
           return ResponseEntity.ok(categoryService.deleteFromDB(categoryName));
     }
 }

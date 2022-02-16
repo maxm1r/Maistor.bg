@@ -1,6 +1,7 @@
 package com.finalproject.finalproject.controller;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
+import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.model.dto.ExceptionDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,4 +16,5 @@ public class AbstractController {
     public ExceptionDTO badRequestExceptionHandler(BadRequestException e){
         return new ExceptionDTO(e.getMessage());
     }
+
 }

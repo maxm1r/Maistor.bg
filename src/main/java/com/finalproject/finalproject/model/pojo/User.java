@@ -31,6 +31,10 @@ public class User {
     private String phoneNumber;
     @ManyToMany(mappedBy = "users")
     private Set<Category> categories = new HashSet<>();
+    @OneToMany
+    @JoinColumn(name = "owner_id")
+    private Set<Post> posts = new HashSet<>();
+
 
     public User(UserRegisterRequestDTO dto) {
         this.firstName = dto.getFirstName();

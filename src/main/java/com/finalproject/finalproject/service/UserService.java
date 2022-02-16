@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -42,7 +43,7 @@ public class UserService {
         return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
     @Transactional
-    public User addCategory(int id, String categoryName) {
+    public UserWithoutPasswordDTO addCategory(int id, String categoryName) {
         User user = userRepository.findById(id).orElse(null);
         Category category = categoryRepository.getByCategoryName(categoryName);
         if (user == null){
@@ -62,11 +63,11 @@ public class UserService {
         category.getUsers().add(user);
         user = userRepository.save(user);
         category = categoryRepository.save(category);
-        return  user;
+        return  modelMapper.map(category, UserWithoutPasswordDTO.class);
     }
 
     @Transactional
-    public User removeCategory(int id, String categoryName){
+    public UserWithoutPasswordDTO removeCategory(int id, String categoryName){
         User user = userRepository.findById(id).orElse(null);
         Category category = categoryRepository.getByCategoryName(categoryName);
         // TODO some validiations
@@ -74,17 +75,18 @@ public class UserService {
         category.getUsers().remove(user);
         user = userRepository.save(user);
         category = categoryRepository.save(category);
-        return user;
+        return modelMapper.map(category, UserWithoutPasswordDTO.class);
     }
 
-    public Set<User> getAllUsersForCategory(String categoryName) {
-        Category category = categoryRepository.getByCategoryName(categoryName);
-        Set<User> users = userRepository.getAllByCategoriesContaining(category);
-
-        return users;
+    public Set<UserWithoutPasswordDTO> getAllUsersForCategory(String categoryName) {
+        Category category = categoryRepository.findByCategoryName(categoryName);
+        return userRepository.getAllByCategoriesContaining(category)
+                .stream()
+                .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class))
+                .collect(Collectors.toSet());
     }
 
-    public User edinUser(EditUserDTO dto) {
+    public EditUserDTO edinUser(EditUserDTO dto) {
         User user = userRepository.getById(dto.getId());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
@@ -92,30 +94,27 @@ public class UserService {
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setProfilePicture(dto.getProfilePicture());
         user = userRepository.save(user);
-        return user;
+        return modelMapper.map(user,EditUserDTO.class);
     }
 
-    public User getUserByID(int id) {
+    public UserWithoutPasswordDTO getUserByID(int id) {
         User user = userRepository.getById(id);
         if (user == null){
             throw new BadRequestException("There is no user with id:"+id);
         }
-        return user;
+        return modelMapper.map(user,UserWithoutPasswordDTO.class);
     }
 
-    public List<User> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        if (users.isEmpty()){
-            throw new BadRequestException("There are no users in the DB");
-        }
-        return users;
+    public Set<UserWithoutPasswordDTO> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class)).collect(Collectors.toSet());
     }
 
-    public Collection<User> getAllWorkmans() {
-        Collection<User> users = userRepository.findAllWorkmans();
-        if (users.isEmpty()){
-            throw new BadRequestException("There are not workMans in the DB");
-        }
-        return users;
+    public Set<UserWithoutPasswordDTO> getAllWorkmans() {
+        return userRepository.findAllWorkmans()
+                .stream()
+                .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class))
+                .collect(Collectors.toSet());
     }
 }
