@@ -13,7 +13,7 @@ import java.util.Set;
 
 
 @RestController
-public class PostController extends AbstractController{
+public class PostController extends CustomExceptionHandler {
 
     @Autowired
     PostService postService;

@@ -14,5 +14,5 @@ import org.springframework.stereotype.Component;
 public class ExceptionDTO {
 
     private String msg;
-
+    private int status;
 }

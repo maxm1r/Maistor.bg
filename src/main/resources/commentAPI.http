@@ -1,0 +1,7 @@
+### add
+POST localhost:8888/comments
+Content-Type: application/json
+
+{
+  "text" : "comment"
+}
