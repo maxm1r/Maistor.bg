@@ -14,10 +14,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class CategoryDTO {
 
+    private int id;
     private String categoryName;
-
-    public CategoryDTO(Category category){
-        this.categoryName = category.getCategoryName();
-    }
 
 }

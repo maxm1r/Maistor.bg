@@ -27,7 +27,6 @@ public class UserService {
 
 
     public UserRegisterResponseDTO register(UserRegisterRequestDTO registerDTO) {
-
         if (!UserUtility.passMatch(registerDTO)){
             throw new BadRequestException("Passwords dont match");
         }
@@ -43,39 +42,45 @@ public class UserService {
         return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
     @Transactional
-    public UserWithoutPasswordDTO addCategory(int id, String categoryName) {
+    public UserWithoutPasswordDTO addCategory(int id, CategoryNameDto categoryName) {
         User user = userRepository.findById(id).orElse(null);
-        Category category = categoryRepository.getByCategoryName(categoryName);
         if (user == null){
             throw new BadRequestException("There is no user with that id");
         }
         if (!user.isWorkman()){
             throw new BadRequestException("Only workmans can have categories!");
         }
-        if (category == null){
-            throw  new BadRequestException("There is no category with that name");
-        }
+        Category category = categoryRepository.findByCategoryName(categoryName.getCategoryName());
         if (user.getCategories().contains(category)){
             throw new BadRequestException("User already have this category");
         }
+        if (category== null){
+            throw new BadRequestException("This category doesnt exist");
+        }
         // TODO some validations
-        user.getCategories().add(category);
         category.getUsers().add(user);
+        category=categoryRepository.save(category);
+        user.getCategories().add(category);
         user = userRepository.save(user);
-        category = categoryRepository.save(category);
-        return  modelMapper.map(category, UserWithoutPasswordDTO.class);
+        return  modelMapper.map(user, UserWithoutPasswordDTO.class);
     }
 
     @Transactional
-    public UserWithoutPasswordDTO removeCategory(int id, String categoryName){
+    public UserWithoutPasswordDTO removeCategory(int id, CategoryNameDto categoryName){
         User user = userRepository.findById(id).orElse(null);
-        Category category = categoryRepository.getByCategoryName(categoryName);
+        Category category = categoryRepository.findByCategoryName(categoryName.getCategoryName());
         // TODO some validiations
+        if (category==null){
+            throw new BadRequestException("Category name is not valid");
+        }
+        if (!UserUtility.userHasCategory(user,categoryName.getCategoryName())){
+            throw new BadRequestException("The user dont have this category");
+        }
         user.getCategories().remove(category);
         category.getUsers().remove(user);
         user = userRepository.save(user);
         category = categoryRepository.save(category);
-        return modelMapper.map(category, UserWithoutPasswordDTO.class);
+        return modelMapper.map(user, UserWithoutPasswordDTO.class);
     }
 
     public Set<UserWithoutPasswordDTO> getAllUsersForCategory(String categoryName) {

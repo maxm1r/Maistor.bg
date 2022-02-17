@@ -23,11 +23,11 @@ public class PostController extends CustomExceptionHandler {
         return ResponseEntity.ok(postService.createPost(id,postDTO));
     }
     @DeleteMapping("/post/{id}")
-    public ResponseEntity<PostDTO> deletePost(@PathVariable int id){
+    public ResponseEntity<PostResponseDTO> deletePost(@PathVariable int id){
         return ResponseEntity.ok(postService.deletePost(id));
     }
     @GetMapping("/post/all")
-    public ResponseEntity<List<PostDTO>> getAllPosts(){
+    public ResponseEntity<List<PostResponseDTO>> getAllPosts(){
         return ResponseEntity.ok(postService.getAllPosts());
     }
 }
