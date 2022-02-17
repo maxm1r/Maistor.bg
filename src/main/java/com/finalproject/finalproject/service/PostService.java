@@ -2,6 +2,7 @@ package com.finalproject.finalproject.service;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.model.dto.PostDTO;
+import com.finalproject.finalproject.model.dto.PostResponseDTO;
 import com.finalproject.finalproject.model.pojo.City;
 import com.finalproject.finalproject.model.pojo.Post;
 import com.finalproject.finalproject.model.pojo.User;
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -30,7 +34,7 @@ public class PostService {
     @Autowired
     CityRepository cityRepository;
 
-    public PostDTO createPost(int id, PostDTO postDTO) {
+    public PostResponseDTO createPost(int id, PostDTO postDTO) {
 
         User user = userRepository.findById(id).orElse(null);
         Post post = new Post();
@@ -45,6 +49,18 @@ public class PostService {
         post = postRepository.save(post);
         user.getPosts().add(post);
         userRepository.save(user);
-        return  modelMapper.map(post,PostDTO.class);
+        return  modelMapper.map(post, PostResponseDTO.class);
+    }
+
+    public PostDTO deletePost(int id){
+        Post post = postRepository.deleteById(id);
+        PostDTO dto = modelMapper.map(post,PostDTO.class);
+        return dto;
+    }
+
+    public List<PostDTO> getAllPosts() {
+        List<Post> posts = postRepository.findAll();
+        List<PostDTO> dtos = posts.stream().map(post -> modelMapper.map(post,PostDTO.class)).collect(Collectors.toList());
+        return dtos;
     }
 }
