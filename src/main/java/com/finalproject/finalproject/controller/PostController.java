@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-public class PostController extends AbstractController{
+public class PostController extends CustomExceptionHandler {
 
     @Autowired
     PostService postService;

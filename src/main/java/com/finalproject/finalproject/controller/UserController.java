@@ -1,22 +1,16 @@
 package com.finalproject.finalproject.controller;
 
 import com.finalproject.finalproject.model.dto.*;
-import com.finalproject.finalproject.model.pojo.Category;
-import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
-public class UserController extends AbstractController {
+public class UserController extends CustomExceptionHandler {
 
     @Autowired
     UserService userService;

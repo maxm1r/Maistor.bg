@@ -16,15 +16,15 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false, nullable = false )
+    @Column(name = "id")
     private int id;
     private String text;
     private LocalDateTime postedDate;
     @ManyToOne
-    @JoinColumn(name = "owner_id",nullable = false)
+    @JoinColumn(name = "owner_id")
     private User ownerId;
     @ManyToOne
-    @JoinColumn(name = "workman_id",nullable = false)
+    @JoinColumn(name = "workman_id")
     private User workmanId;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "parent_comment_id"))
