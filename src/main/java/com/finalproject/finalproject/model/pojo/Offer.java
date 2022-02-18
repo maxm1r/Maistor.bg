@@ -3,9 +3,9 @@ package com.finalproject.finalproject.model.pojo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,6 +25,6 @@ public class Offer {
     private double pricePerHour;
     private LocalDateTime offer_date;
     private int hoursNeeded;
-    private int dayNeeded;
+    private int daysNeeded;
 
 }

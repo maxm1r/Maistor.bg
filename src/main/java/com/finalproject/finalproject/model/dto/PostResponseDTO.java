@@ -1,20 +1,27 @@
 package com.finalproject.finalproject.model.dto;
 
-import com.finalproject.finalproject.model.pojo.Category;
+import com.finalproject.finalproject.model.pojo.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
-@Component
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryDTO {
+@Component
+public class PostResponseDTO {
 
     private int id;
     private String categoryName;
+    private String description;
+    private String cityName;
+    private UserWithoutPasswordDTO owner;
+    private LocalDateTime postedDate;
+
 
 }

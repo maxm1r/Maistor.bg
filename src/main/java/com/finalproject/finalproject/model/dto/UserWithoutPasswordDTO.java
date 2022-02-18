@@ -25,21 +25,4 @@ public class UserWithoutPasswordDTO {
     private String phoneNumber;
     private Set<CategoryDTO> categories;
 
-
-    public UserWithoutPasswordDTO(User user){
-        this.id = user.getId();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.email = user.getEmail();
-        this.profilePicture = user.getProfilePicture();
-        this.phoneNumber = user.getPhoneNumber();
-        this.isWorkman = user.isWorkman();
-        categories = new HashSet<>();
-        Set<Category>  hashSet = user.getCategories();
-        for (Category category : hashSet) {
-            categories.add(new CategoryDTO(category));
-        }
-    }
-
-
 }

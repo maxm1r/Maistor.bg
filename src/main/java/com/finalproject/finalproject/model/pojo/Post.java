@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -32,4 +34,7 @@ public class Post {
     @JoinColumn(name = "city_id")
     private City city;
     private String description;
+    @OneToMany
+    @JoinColumn(name = "post_id")
+    private Set<Offer> offers = new HashSet<>();
 }
