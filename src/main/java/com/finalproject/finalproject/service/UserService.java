@@ -28,7 +28,7 @@ public class UserService {
 
     public UserRegisterResponseDTO register(UserRegisterRequestDTO registerDTO) {
         if (!UserUtility.passMatch(registerDTO)){
-            throw new BadRequestException("Passwords dont match");
+            throw new BadRequestException("Passwords doesn't match");
         }
         if (!UserUtility.isEmailValid(registerDTO)){
             throw new BadRequestException("Invalid email");
@@ -45,17 +45,17 @@ public class UserService {
     public UserWithoutPasswordDTO addCategory(int id, CategoryNameDto categoryName) {
         User user = userRepository.findById(id).orElse(null);
         if (user == null){
-            throw new BadRequestException("There is no user with that id");
+            throw new BadRequestException("There is no user with such a id");
         }
         if (!user.isWorkman()){
             throw new BadRequestException("Only workmans can have categories!");
         }
         Category category = categoryRepository.findByCategoryName(categoryName.getCategoryName());
         if (user.getCategories().contains(category)){
-            throw new BadRequestException("User already have this category");
+            throw new BadRequestException("The user already has this category");
         }
         if (category== null){
-            throw new BadRequestException("This category doesnt exist");
+            throw new BadRequestException("This category doesn't exist");
         }
         // TODO some validations
         category.getUsers().add(user);
@@ -71,10 +71,10 @@ public class UserService {
         Category category = categoryRepository.findByCategoryName(categoryName.getCategoryName());
         // TODO some validiations
         if (category==null){
-            throw new BadRequestException("Category name is not valid");
+            throw new BadRequestException("No category with such a name");
         }
         if (!UserUtility.userHasCategory(user,categoryName.getCategoryName())){
-            throw new BadRequestException("The user dont have this category");
+            throw new BadRequestException("The user doesn't have this category");
         }
         user.getCategories().remove(category);
         category.getUsers().remove(user);
@@ -105,7 +105,7 @@ public class UserService {
     public UserWithoutPasswordDTO getUserByID(int id) {
         User user = userRepository.getById(id);
         if (user == null){
-            throw new BadRequestException("There is no user with id:"+id);
+            throw new BadRequestException("There is no user with such a id");
         }
         return modelMapper.map(user,UserWithoutPasswordDTO.class);
     }
