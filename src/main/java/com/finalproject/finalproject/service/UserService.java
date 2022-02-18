@@ -1,6 +1,7 @@
 package com.finalproject.finalproject.service;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
+import com.finalproject.finalproject.exceptions.UnauthorizedException;
 import com.finalproject.finalproject.model.dto.*;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.User;
@@ -54,6 +55,21 @@ public class UserService {
         user = userRepository.save(user);
         return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
+
+    public User login(String email, String password){
+        if(email == null || email.isBlank()){
+            throw new BadRequestException("Email is mandatory");
+        }
+        if(password == null || password.isBlank()){
+            throw new BadRequestException("Password is mandatory");
+        }
+        User u = userRepository.findByEmail(email);
+        if(u == null){
+            throw new UnauthorizedException("Wrong credentials");
+        }
+        return u;
+    }
+
     @Transactional
     public UserWithoutPasswordDTO addCategory(int id, String categoryName) {
         User user = userRepository.findById(id).orElse(null);
