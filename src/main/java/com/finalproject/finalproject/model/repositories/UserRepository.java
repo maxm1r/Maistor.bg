@@ -18,5 +18,6 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     public Set<User> getAllByCategoriesContaining(Category category);
     @Query(value = "SELECT * FROM user WHERE is_workman = true",nativeQuery = true)
     public Collection<User> findAllWorkmans();
+    public User findUserByPhoneNumber(String phoneNumber);
 
 }

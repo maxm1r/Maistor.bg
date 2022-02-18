@@ -37,6 +37,18 @@ public class UserService {
         if (userRepository.findByEmail(registerDTO.getEmail()) != null){
             throw  new BadRequestException("Email already exist");
         }
+        if(registerDTO.getFirstName().isEmpty()){
+            throw new BadRequestException("Enter you first name!");
+        }
+        if(registerDTO.getLastName().isEmpty()){
+            throw new BadRequestException("Enter you last name!");
+        }
+        if(registerDTO.getPhoneNumber().isEmpty()){
+            throw new BadRequestException("Enter you phone number!");
+        }
+        if (userRepository.findUserByPhoneNumber(registerDTO.getPhoneNumber()) != null){
+            throw new BadRequestException("The phone is already registered!");
+        }
         // TODO real email verification , real password verification, phone verification
         User user = modelMapper.map(registerDTO,User.class);
         user = userRepository.save(user);

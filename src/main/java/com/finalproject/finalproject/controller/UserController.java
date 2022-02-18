@@ -24,12 +24,12 @@ public class UserController extends CustomExceptionHandler {
 
     @PostMapping("/user/category/{id}")
     public ResponseEntity<UserWithoutPasswordDTO> addCategory(@PathVariable int id , @RequestBody CategoryNameDto categoryName){
-        return ResponseEntity.ok(userService.addCategory(id,categoryName));
+        return ResponseEntity.ok(userService.addCategory(id,categoryName.getCategoryName()));
     }
 
     @DeleteMapping("/user/category/{id}")
     public ResponseEntity<UserWithoutPasswordDTO> removeCategory(@PathVariable int id, @RequestBody CategoryNameDto categoryName){
-        return ResponseEntity.ok(userService.removeCategory(id,categoryName));
+        return ResponseEntity.ok(userService.removeCategory(id,categoryName.getCategoryName()));
     }
 
     @GetMapping("/user/category/{categoryName}")

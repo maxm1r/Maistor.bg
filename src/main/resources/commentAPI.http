@@ -11,7 +11,7 @@ POST localhost:8888/user
 Content-Type: application/json
 
 {
-  "email" : "marto@abv.bg",
+  "email" : "marto2@abv.bg",
   "password" : "m1235",
   "confirmPassword": "m1235",
   "firstName": "Marto",
