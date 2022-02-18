@@ -3,5 +3,18 @@ POST localhost:8888/comments
 Content-Type: application/json
 
 {
-  "text" : "comment"
+"text" : "comment"
+}
+
+### register
+POST localhost:8888/user
+Content-Type: application/json
+
+{
+  "email" : "marto@abv.bg",
+  "password" : "m1235",
+  "confirmPassword": "m1235",
+  "firstName": "Marto",
+  "lastName": "Ivanov",
+  "phoneNumber": "0812312345"
 }

@@ -37,6 +37,15 @@ public class UserService {
         if (userRepository.findByEmail(registerDTO.getEmail()) != null){
             throw  new BadRequestException("Email already exist");
         }
+        if (registerDTO.getFirstName().isEmpty()){
+            throw new BadRequestException("Please enter your first name!");
+        }
+        if (registerDTO.getLastName().isEmpty()){
+            throw new BadRequestException("Please enter your last name!");
+        }
+        if (registerDTO.getPhoneNumber().isEmpty()){
+            throw new BadRequestException("Please enter a phone number!");
+        }
         // TODO real email verification , real password verification, phone verification
         User user = modelMapper.map(registerDTO,User.class);
         user = userRepository.save(user);
@@ -59,6 +68,7 @@ public class UserService {
             throw new BadRequestException("User already have this category");
         }
         // TODO some validations
+        //TODO add session_ID
         user.getCategories().add(category);
         category.getUsers().add(user);
         user = userRepository.save(user);
