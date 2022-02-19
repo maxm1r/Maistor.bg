@@ -1,0 +1,8 @@
+### create post
+POST localhost:8888/post/{id}
+Content-Type: application/json
+{
+"categoryName" : "boyadzhia",
+"description" : "mnogo boyadisvam",
+"cityName" : "sofia"
+}

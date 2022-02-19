@@ -48,10 +48,10 @@ public class OfferService {
         if (userRepository.findById(id).isEmpty()){
             throw new BadRequestException("User not found");
         }
-        if (postRepository.findById(createOffer.getPostId()).isEmpty()){
+        if (postRepository.findById(createOffer.getPostId()) == null){
             throw new BadRequestException("Post not found");
         }
-        Post post = postRepository.findById(createOffer.getPostId()).get();
+        Post post = postRepository.findById(createOffer.getPostId());
         User user = userRepository.findById(id).get();
         Offer offer = new Offer();
         offer.setOffer_date(LocalDateTime.now());

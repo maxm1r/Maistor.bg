@@ -18,6 +18,7 @@ public class CategoryController extends CustomExceptionHandler {
 
     @PostMapping("/category/{categoryName}")
     public ResponseEntity<CategoryDTO> addCategoryToDB(@PathVariable("categoryName") CategoryNameDto categoryName){
+
         return ResponseEntity.ok(categoryService.addToDB(categoryName));
     }
 

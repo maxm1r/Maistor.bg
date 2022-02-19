@@ -3,6 +3,7 @@ package com.finalproject.finalproject.service;
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.model.dto.PostDTO;
 import com.finalproject.finalproject.model.dto.PostResponseDTO;
+import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.City;
 import com.finalproject.finalproject.model.pojo.Post;
 import com.finalproject.finalproject.model.pojo.User;
@@ -63,7 +64,7 @@ public class PostService {
     }
 
     public PostResponseDTO deletePost(int id){
-        if (!postRepository.findById(id).isPresent()){
+        if (postRepository.findById(id) == null){
             throw new BadRequestException("No post with that id");
         }
         Post post = postRepository.deleteById(id);
@@ -75,5 +76,25 @@ public class PostService {
         List<Post> posts = postRepository.findAll();
         List<PostResponseDTO> dtos = posts.stream().map(post -> modelMapper.map(post,PostResponseDTO.class)).collect(Collectors.toList());
         return dtos;
+    }
+
+    public PostResponseDTO editPost(PostDTO postDTO, int id) {
+        Post post = postRepository.findById(id);
+        if (postDTO.getDescription().isEmpty() || postDTO.getDescription().isBlank()){
+            throw new BadRequestException("Bad Description");
+        }
+        if (cityRepository.findByCityName(postDTO.getCityName()) == null){
+         throw  new BadRequestException("Bad city name");
+        }
+        if (categoryRepository.findByCategoryName(postDTO.getCategoryName()) == null){
+            throw new BadRequestException("Bad category name");
+        }
+        Category category = categoryRepository.findByCategoryName(postDTO.getCategoryName());
+        City city = cityRepository.findByCityName(postDTO.getCityName());
+        post.setDescription(postDTO.getDescription());
+        post.setCategory(category);
+        post.setCity(city);
+        return modelMapper.map(post,PostResponseDTO.class);
+
     }
 }

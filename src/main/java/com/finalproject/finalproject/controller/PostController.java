@@ -20,6 +20,7 @@ public class PostController extends CustomExceptionHandler {
 
     @PostMapping("/post/{id}")
     public ResponseEntity<PostResponseDTO> createPost(@PathVariable int id, @RequestBody PostDTO postDTO){
+
         return ResponseEntity.ok(postService.createPost(id,postDTO));
     }
     @DeleteMapping("/post/{id}")
@@ -30,4 +31,10 @@ public class PostController extends CustomExceptionHandler {
     public ResponseEntity<List<PostResponseDTO>> getAllPosts(){
         return ResponseEntity.ok(postService.getAllPosts());
     }
+
+    @PutMapping("/post/{id}")
+    public ResponseEntity<PostResponseDTO> editPost(@RequestBody PostDTO postDTO,@PathVariable int id ){
+        return ResponseEntity.ok(postService.editPost(postDTO,id));
+    }
+
 }
