@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.CompletionException;
 
 @Service
 public class CommentService {
@@ -34,5 +35,13 @@ public class CommentService {
         comment.setWorkmanId(userRepository.findById(workmanID).orElseThrow(()-> new NotFoundException("User not found")));
         commentRepository.save(comment);
         return comment;
+    }
+
+    public Comment getComment(int id){
+        return getCommentById(id);
+    }
+
+    private Comment getCommentById(int id){
+        return commentRepository.findById(id).orElseThrow(()-> new NotFoundException("Comment not found!"));
     }
 }

@@ -14,5 +14,5 @@ public class CommentWithOwnerDTO {
     private int id;
     private String text;
     private LocalDateTime postedDate;
-    private UserWithoutCommentDTO owner;
+    private UserWithoutCommentDTO ownerID;
 }

@@ -6,6 +6,10 @@ Content-Type: application/json
 "text" : "comment"
 }
 
+### getComment
+GET localhost:8888/comments/1
+Content-Type: application/json
+
 ### register
 POST localhost:8888/user
 Content-Type: application/json
