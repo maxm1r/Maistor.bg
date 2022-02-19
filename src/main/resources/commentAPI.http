@@ -3,32 +3,19 @@ POST localhost:8888/4/comments
 Content-Type: application/json
 
 {
-"text" : "comment"
+"text" : "comment2"
 }
 
 ### getComment
-GET localhost:8888/comments/1
+GET localhost:8888/comments/4
 Content-Type: application/json
 
-### register
-POST localhost:8888/user
-Content-Type: application/json
 
-{
-  "email" : "marto3@abv.bg",
-  "password" : "m1235",
-  "confirmPassword": "m1235",
-  "firstName": "Marto",
-  "lastName": "Ivanov",
-  "phoneNumber": "0812312235",
-  "isWorkman": true
-}
 
-### login
-POST localhost:8888/login
-Content-Type: application/json
 
-{
-  "email" : "marto@abv.bg",
-  "password" : "m1235"
+@GetMapping("comment/{id}/delete")
+public CommentDTO deleteById(@PathVariable int id,HttpSession session,HttpServletRequest request){
+UserUtility.validateLogin(session,request);
+Comment comment = commentService.getComment(id);
+commentService.deleteById();
 }

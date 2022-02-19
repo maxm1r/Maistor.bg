@@ -3,8 +3,10 @@ package com.finalproject.finalproject.controller;
 import com.finalproject.finalproject.model.dto.*;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.service.UserService;
+import com.finalproject.finalproject.utility.UserUtility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,17 +23,19 @@ public class UserController extends CustomExceptionHandler {
     ModelMapper modelMapper;
     public static final String LOGGED = "logged";
     public static final String USER_ID = "user_id";
+    public static final String LOGGED_FROM = "logged_from";
 
     @PostMapping("/user")
     public ResponseEntity<UserRegisterResponseDTO> register(@RequestBody UserRegisterRequestDTO registerDTO){
         return ResponseEntity.ok(userService.register(registerDTO));
     }
     @PostMapping("/login")
-    public UserLoginResponseDTO login(@RequestBody User user, HttpSession session){
+    public UserLoginResponseDTO login(@RequestBody User user, HttpSession session,HttpServletRequest request){
         String email = user.getEmail();
         String password = user.getPassword();
         User u = userService.login(email, password);
         session.setAttribute(LOGGED, true);
+        session.setAttribute("logged_from",request.getRemoteAddr());
         session.setAttribute(USER_ID, u.getId());
         UserLoginResponseDTO dto = modelMapper.map(u, UserLoginResponseDTO.class);
         return dto;
@@ -72,5 +76,10 @@ public class UserController extends CustomExceptionHandler {
         return ResponseEntity.ok(userService.edinUser(dto));
     }
 
-}
+    @PostMapping("/logout")
+    public void logOut(HttpSession session){
+        session.invalidate();
+    }
 
+
+}

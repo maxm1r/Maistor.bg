@@ -1,10 +1,16 @@
 package com.finalproject.finalproject.utility;
 
+import com.finalproject.finalproject.exceptions.UnauthorizedException;
 import com.finalproject.finalproject.model.dto.UserRegisterRequestDTO;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.User;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Set;
+
+import static com.finalproject.finalproject.controller.UserController.LOGGED;
+import static com.finalproject.finalproject.controller.UserController.LOGGED_FROM;
 
 public class UserUtility {
 
@@ -30,5 +36,14 @@ public class UserUtility {
             }
         }
         return false;
+    }
+
+    public static void validateLogin(HttpSession session, HttpServletRequest request) {
+        boolean newSession = session.isNew();
+        boolean logged = session.getAttribute(LOGGED) != null && ((Boolean)session.getAttribute(LOGGED));
+        boolean sameIP = request.getRemoteAddr().equals(session.getAttribute(LOGGED_FROM));
+        if(newSession || !logged || !sameIP){
+            throw new UnauthorizedException("You have to login!");
+        }
     }
 }

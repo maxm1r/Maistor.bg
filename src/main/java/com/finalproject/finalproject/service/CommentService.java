@@ -3,15 +3,16 @@ package com.finalproject.finalproject.service;
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
-import com.finalproject.finalproject.model.dto.AddCommentDTO;
+import com.finalproject.finalproject.model.dto.CommentDTO;
+import com.finalproject.finalproject.model.dto.CommentWithoutUserPasswordDTO;
 import com.finalproject.finalproject.model.pojo.Comment;
+import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.CommentRepository;
 import com.finalproject.finalproject.model.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.concurrent.CompletionException;
 
 @Service
 public class CommentService {
@@ -21,7 +22,7 @@ public class CommentService {
     @Autowired
     private UserRepository userRepository;
 
-    public Comment addComment(AddCommentDTO commentDTO, Integer userId, Integer workmanID){
+    public CommentWithoutUserPasswordDTO addComment(CommentDTO commentDTO, Integer userId, Integer workmanID){
         if (userId ==null ){
             throw new UnauthorizedException("Please login");
         }
@@ -31,17 +32,33 @@ public class CommentService {
         Comment comment = new Comment();
         comment.setText(commentDTO.getText());
         comment.setPostedDate(LocalDateTime.now());
-        comment.setOwnerId(userRepository.findById(userId).orElseThrow(()-> new NotFoundException("Owner not found")));
-        comment.setWorkmanId(userRepository.findById(workmanID).orElseThrow(()-> new NotFoundException("User not found")));
+        comment.setOwnerId(getUserById(userId));
+        comment.setWorkmanId(getUserById(workmanID));
         commentRepository.save(comment);
-        return comment;
+        CommentWithoutUserPasswordDTO dto = new CommentWithoutUserPasswordDTO(comment);
+        return dto;
     }
 
     public Comment getComment(int id){
         return getCommentById(id);
     }
 
+    public boolean deleteCommentById(Integer id) {
+        try {
+            commentRepository.deleteById(id);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+
+    }
+
+    //TODO getByAllParentId
+
     private Comment getCommentById(int id){
         return commentRepository.findById(id).orElseThrow(()-> new NotFoundException("Comment not found!"));
+    }
+    private User getUserById(int id){
+        return userRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found"));
     }
 }

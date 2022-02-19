@@ -1,0 +1,15 @@
+### create category
+POST localhost:8888/category/{categoryName}
+Content-Type: application/json
+
+{
+  "categoryName" : "boyadzhia"
+}
+
+### delete category
+DELETE localhost:8888/category/{categoryName}
+Content-Type: application/json
+
+{
+  "categoryName" : "boyadzhia"
+}

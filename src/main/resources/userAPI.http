@@ -1,0 +1,22 @@
+### register
+POST localhost:8888/user
+Content-Type: application/json
+
+{
+  "email" : "marto3@abv.bg",
+  "password" : "m1235",
+  "confirmPassword": "m1235",
+  "firstName": "Marto",
+  "lastName": "Ivanov",
+  "phoneNumber": "0812312235",
+  "isWorkman": true
+}
+
+### login
+POST localhost:8888/login
+Content-Type: application/json
+
+{
+  "email" : "marto@abv.bg",
+  "password" : "m1235"
+}
