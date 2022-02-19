@@ -14,9 +14,9 @@ public class CommentController {
 
     @Autowired
     private CommentService commentService;
-    @PostMapping("/comments")
-    public Comment add(@RequestBody AddCommentDTO comment, HttpSession session){
 
-        return commentService.addComment(comment);
+    @PostMapping("/{id}/comments")
+    public Comment add(@RequestBody AddCommentDTO comment, HttpSession session, @PathVariable int id){
+        return commentService.addComment(comment, (Integer)session.getAttribute(UserController.USER_ID), id);
     }
 }

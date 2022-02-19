@@ -1,5 +1,6 @@
 package com.finalproject.finalproject.model.pojo;
 
+import com.finalproject.finalproject.model.dto.UserWithoutPasswordDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -13,11 +13,12 @@ import java.util.Set;
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer> {
 
-    public User findByEmail(String email);
-    public User getById(int id);
-    public Set<User> getAllByCategoriesContaining(Category category);
+    User findByEmail(String email);
+    User getById(int id);
+    Set<User> getAllByCategoriesContaining(Category category);
     @Query(value = "SELECT * FROM user WHERE is_workman = true",nativeQuery = true)
-    public Collection<User> findAllWorkmans();
-    public User findUserByPhoneNumber(String phoneNumber);
+    Collection<User> findAllWorkmans();
+    User findUserByPhoneNumber(String phoneNumber);
+
 
 }

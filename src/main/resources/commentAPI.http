@@ -1,5 +1,5 @@
-### add
-POST localhost:8888/comments
+### addComment
+POST localhost:8888/4/comments
 Content-Type: application/json
 
 {
@@ -11,12 +11,13 @@ POST localhost:8888/user
 Content-Type: application/json
 
 {
-  "email" : "marto2@abv.bg",
+  "email" : "marto3@abv.bg",
   "password" : "m1235",
   "confirmPassword": "m1235",
   "firstName": "Marto",
   "lastName": "Ivanov",
-  "phoneNumber": "0812312345"
+  "phoneNumber": "0812312235",
+  "isWorkman": true
 }
 
 ### login
