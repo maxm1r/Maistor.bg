@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletionException;
 
 @Service
 public class CommentService {
@@ -34,6 +37,7 @@ public class CommentService {
         comment.setPostedDate(LocalDateTime.now());
         comment.setOwnerId(getUserById(userId));
         comment.setWorkmanId(getUserById(workmanID));
+        comment.setParentComment(commentRepository.findById(commentDTO.getParentCommentId()).orElseThrow(()-> new BadRequestException("Invalid parent comment") ));
         commentRepository.save(comment);
         CommentWithoutUserPasswordDTO dto = new CommentWithoutUserPasswordDTO(comment);
         return dto;
@@ -47,13 +51,29 @@ public class CommentService {
         try {
             commentRepository.deleteById(id);
             return true;
-        } catch (Exception ex) {
+        } catch (Exception e) {
             return false;
         }
 
     }
 
-    //TODO getByAllParentId
+    public Comment edit(Comment comment){
+        Optional<Comment> opt = commentRepository.findById(comment.getId());
+        if(opt.isPresent()){
+            commentRepository.save(comment);
+            return comment;
+        }
+        else{
+            throw new NotFoundException("Comment not found");
+        }
+    }
+
+    //TODO getAllByParentId
+
+    public List<Comment> getAllByParentId(int id){
+        Comment comment = commentRepository.findById(id).orElseThrow(()-> new NotFoundException("Comment not found!"));
+        return commentRepository.findAllByParentComment(comment);
+    }
 
     private Comment getCommentById(int id){
         return commentRepository.findById(id).orElseThrow(()-> new NotFoundException("Comment not found!"));

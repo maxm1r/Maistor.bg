@@ -1,24 +1,37 @@
 package com.finalproject.finalproject.controller;
 
+import com.finalproject.finalproject.exceptions.BadRequestException;
+import com.finalproject.finalproject.exceptions.ForbiddenException;
+import com.finalproject.finalproject.exceptions.NotFoundException;
+import com.finalproject.finalproject.exceptions.UnauthorizedException;
 import com.finalproject.finalproject.model.dto.CommentDTO;
 import com.finalproject.finalproject.model.dto.CommentWithOwnerDTO;
 import com.finalproject.finalproject.model.dto.CommentWithoutUserPasswordDTO;
 import com.finalproject.finalproject.model.dto.UserWithoutCommentDTO;
 import com.finalproject.finalproject.model.pojo.Comment;
+import com.finalproject.finalproject.model.pojo.User;
+import com.finalproject.finalproject.model.repositories.CommentRepository;
+import com.finalproject.finalproject.model.repositories.UserRepository;
 import com.finalproject.finalproject.service.CommentService;
 import com.finalproject.finalproject.utility.UserUtility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class CommentController {
 
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private ModelMapper mapper;
@@ -41,5 +54,45 @@ public class CommentController {
             return dto;
         }
 
+    @DeleteMapping("/comments/{id}")
+        public CommentWithoutUserPasswordDTO delete(@PathVariable int id,HttpSession session,HttpServletRequest request){
+        UserUtility.validateLogin(session,request);
+        int commentId= commentService.getComment(id).getOwnerId().getId();
+        Comment comment = new Comment();
 
+        comment.setId(id);
+        if((Integer) session.getAttribute(UserController.USER_ID) != commentId){
+            throw new ForbiddenException("You are not the owner of this comment!");
+        }
+
+        CommentWithoutUserPasswordDTO dto = new CommentWithoutUserPasswordDTO(commentService.getComment(id));
+        commentService.deleteCommentById(id);
+        return dto;
+    }
+
+    @PutMapping("/{id}/comments")
+    public ResponseEntity<CommentDTO> edit(@RequestBody CommentDTO comment,@PathVariable int id, HttpSession session, HttpServletRequest request){
+        UserUtility.validateLogin(session,request);
+        Comment c = commentService.getComment(comment.getId());
+        if((Integer) session.getAttribute(UserController.USER_ID) != c.getOwnerId().getId()){
+            throw new ForbiddenException("You are not the owner of this comment!");
+        }
+
+        Integer userId = (Integer) session.getAttribute(UserController.USER_ID);
+        Optional<User> u = userRepository.findById(userId);
+        c.setId(comment.getId());
+        c.setOwnerId(u.orElseThrow(()-> new NotFoundException("User not found!")));
+        c.setWorkmanId(userRepository.getById(id));
+        c.setPostedDate(LocalDateTime.now());
+        c.setText(comment.getText());
+        commentService.edit(c);
+        CommentDTO dto = mapper.map(c, CommentDTO.class);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/{id}/replies")
+    public ResponseEntity<List<Comment>> getReplies(@PathVariable int id){
+        //TODO  return DTO
+        return ResponseEntity.ok(commentService.getAllByParentId(id));
+    }
 }
