@@ -22,7 +22,7 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "accepted_offer_id")
     private Offer acceptedOffer;
     private LocalDateTime postedDate; // ?
@@ -34,7 +34,6 @@ public class Post {
     @JoinColumn(name = "city_id")
     private City city;
     private String description;
-    @OneToMany
-    @JoinColumn(name = "post_id")
+    @OneToMany(cascade = {CascadeType.PERSIST},mappedBy = "post")
     private Set<Offer> offers = new HashSet<>();
 }

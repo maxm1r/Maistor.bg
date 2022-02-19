@@ -3,14 +3,8 @@ package com.finalproject.finalproject.service;
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.model.dto.PostDTO;
 import com.finalproject.finalproject.model.dto.PostResponseDTO;
-import com.finalproject.finalproject.model.pojo.Category;
-import com.finalproject.finalproject.model.pojo.City;
-import com.finalproject.finalproject.model.pojo.Post;
-import com.finalproject.finalproject.model.pojo.User;
-import com.finalproject.finalproject.model.repositories.CategoryRepository;
-import com.finalproject.finalproject.model.repositories.CityRepository;
-import com.finalproject.finalproject.model.repositories.PostRepository;
-import com.finalproject.finalproject.model.repositories.UserRepository;
+import com.finalproject.finalproject.model.pojo.*;
+import com.finalproject.finalproject.model.repositories.*;
 import com.finalproject.finalproject.utility.UserUtility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +30,8 @@ public class PostService {
     CategoryRepository categoryRepository;
     @Autowired
     CityRepository cityRepository;
+    @Autowired
+    OfferRepository offerRepository;
 
     @Transactional
     public PostResponseDTO createPost(int id, PostDTO postDTO) {
@@ -62,12 +58,12 @@ public class PostService {
         post = postRepository.save(post);
         return  modelMapper.map(post, PostResponseDTO.class);
     }
-
     public PostResponseDTO deletePost(int id){
         if (postRepository.findById(id) == null){
             throw new BadRequestException("No post with that id");
         }
-        Post post = postRepository.deleteById(id);
+        Post post = postRepository.findById(id);
+        postRepository.deleteById(id);
         PostResponseDTO dto = modelMapper.map(post,PostResponseDTO.class);
         return dto;
     }
@@ -94,7 +90,31 @@ public class PostService {
         post.setDescription(postDTO.getDescription());
         post.setCategory(category);
         post.setCity(city);
+        post = postRepository.save(post);
         return modelMapper.map(post,PostResponseDTO.class);
-
+    }
+    @Transactional
+    public PostResponseDTO acceptOffer(int postId, int offerId) {
+        if (!postRepository.existsById(postId)){
+            throw new BadRequestException("Bad post id");
+        }
+        if (!offerRepository.existsById(offerId)){
+            throw new BadRequestException("Bad offer id");
+        }
+        Post post = postRepository.findById(postId);
+        if (offerRepository.findById(offerId).isEmpty()){
+            throw new BadRequestException("no such a offer");
+        }
+        Offer offer = offerRepository.findById(offerId).get();
+        if (offer.getPost() != post){
+            throw new BadRequestException("This offer is not for this post");
+        }
+        post.setAcceptedOffer(offer);
+        post.setAssignedDate(LocalDateTime.now());
+        post = postRepository.save(post);
+        offer.setAcceptedBy(post);
+        offer = offerRepository.save(offer);
+        // post.getOffers().remove(offer); ?
+        return modelMapper.map(post,PostResponseDTO.class);
     }
 }

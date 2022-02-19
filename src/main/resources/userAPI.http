@@ -3,12 +3,12 @@ POST localhost:8888/user
 Content-Type: application/json
 
 {
-  "email" : "marto3@abv.bg",
-  "password" : "m1235",
-  "confirmPassword": "m1235",
-  "firstName": "Marto",
-  "lastName": "Ivanov",
-  "phoneNumber": "0812312235",
+  "email" : "tsetso123@gmail.com",
+  "password" : "asdf123",
+  "confirmPassword": "asdf123",
+  "firstName": "t",
+  "lastName": "ta",
+  "phoneNumber": "08123122235",
   "isWorkman": true
 }
 
@@ -17,6 +17,17 @@ POST localhost:8888/login
 Content-Type: application/json
 
 {
-  "email" : "marto@abv.bg",
-  "password" : "m1235"
+  "email" : "tsetso123@gmail.com",
+  "password" : "asdf123"
+}
+### get all
+GET localhost:8888/user/all
+Content-Type: application/json
+
+### add category
+POST localhost:8888/user/category/21
+Content-Type: application/json
+
+{
+"categoryName" : "boyadzhia"
 }

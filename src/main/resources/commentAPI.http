@@ -13,9 +13,4 @@ Content-Type: application/json
 
 
 
-@GetMapping("comment/{id}/delete")
-public CommentDTO deleteById(@PathVariable int id,HttpSession session,HttpServletRequest request){
-UserUtility.validateLogin(session,request);
-Comment comment = commentService.getComment(id);
-commentService.deleteById();
 }

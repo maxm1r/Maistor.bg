@@ -29,10 +29,10 @@ public class OfferService {
     OfferRepository offerRepository;
 
     public OfferDTO createOffer(OfferCreateDTO createOffer,int id){
-        if (createOffer.getDayNeeded() > 100){
+        if (createOffer.getDaysNeeded() > 100){
             throw new BadRequestException("Invalid days needed");
         }
-        if (createOffer.getDayNeeded()<1){
+        if (createOffer.getDaysNeeded()<1){
             throw new BadRequestException("Invalid days needed");
         }
         if (createOffer.getHoursNeeded()<0){
@@ -41,7 +41,6 @@ public class OfferService {
         if (createOffer.getHoursNeeded()<0){
             throw new BadRequestException("Invalid hours needed");
         }
-        ArrayList asdf = new ArrayList();
         if (createOffer.getPricePerHour()<0){
             throw new BadRequestException("Invalid price per hour");
         }
@@ -53,14 +52,21 @@ public class OfferService {
         }
         Post post = postRepository.findById(createOffer.getPostId());
         User user = userRepository.findById(id).get();
+        if (!user.isWorkman()){
+            throw new BadRequestException("Only workmans can make offers");
+        }
+        if (post.getOffers() == user){
+            throw new BadRequestException("Cant make offer for your post");
+        }
         Offer offer = new Offer();
         offer.setOffer_date(LocalDateTime.now());
-        offer.setDaysNeeded(createOffer.getDayNeeded());
+        offer.setDaysNeeded(createOffer.getDaysNeeded());
         offer.setHoursNeeded(createOffer.getHoursNeeded());
         offer.setPricePerHour(createOffer.getPricePerHour());
         offer.setPost(post);
         offer.setUser(user);
         offer = offerRepository.save(offer);
+        post.getOffers().add(offer);
         return modelMapper.map(offer,OfferDTO.class);
     }
 }

@@ -36,5 +36,8 @@ public class PostController extends CustomExceptionHandler {
     public ResponseEntity<PostResponseDTO> editPost(@RequestBody PostDTO postDTO,@PathVariable int id ){
         return ResponseEntity.ok(postService.editPost(postDTO,id));
     }
-
+    @PostMapping("/post/{postId}/offer/{offerId}")
+    public ResponseEntity<PostResponseDTO> acceptOffer(@PathVariable int postId, @PathVariable int offerId){
+        return ResponseEntity.ok(postService.acceptOffer(postId,offerId));
+    }
 }

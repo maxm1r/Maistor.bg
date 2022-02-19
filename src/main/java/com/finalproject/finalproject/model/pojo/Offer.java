@@ -16,7 +16,7 @@ public class Offer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @ManyToOne
+    @ManyToOne(cascade ={ CascadeType.ALL}, fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id",nullable = false)
     private Post post;
     @ManyToOne
@@ -26,5 +26,7 @@ public class Offer {
     private LocalDateTime offer_date;
     private int hoursNeeded;
     private int daysNeeded;
+    @OneToOne(mappedBy = "acceptedOffer")
+    private Post acceptedBy;
 
 }
