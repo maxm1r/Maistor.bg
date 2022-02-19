@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Service
 public class OfferService {
@@ -40,6 +41,7 @@ public class OfferService {
         if (createOffer.getHoursNeeded()<0){
             throw new BadRequestException("Invalid hours needed");
         }
+        ArrayList asdf = new ArrayList();
         if (createOffer.getPricePerHour()<0){
             throw new BadRequestException("Invalid price per hour");
         }
