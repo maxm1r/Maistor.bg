@@ -91,7 +91,7 @@ public class UserService {
         category.getUsers().add(user);
         user = userRepository.save(user);
         category = categoryRepository.save(category);
-        return  modelMapper.map(category, UserWithoutPasswordDTO.class);
+        return  modelMapper.map(user, UserWithoutPasswordDTO.class);
     }
 
     @Transactional
@@ -103,7 +103,7 @@ public class UserService {
         category.getUsers().remove(user);
         user = userRepository.save(user);
         category = categoryRepository.save(category);
-        return modelMapper.map(category, UserWithoutPasswordDTO.class);
+        return modelMapper.map(user, UserWithoutPasswordDTO.class);
     }
 
     public Set<UserWithoutPasswordDTO> getAllUsersForCategory(String categoryName) {

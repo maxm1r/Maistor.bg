@@ -25,6 +25,11 @@ Content-Type: application/json
 }
 
 
+<<<<<<< HEAD
 ### getReplies
 GET localhost:8888/9/replies
 Content-Type: application/json
+=======
+
+}
+>>>>>>> cf551161a217007bde9345fb6d9a6cb04e17654b

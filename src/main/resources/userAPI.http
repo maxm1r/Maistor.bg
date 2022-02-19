@@ -24,3 +24,17 @@ Content-Type: application/json
 ### logout
 POST localhost:8888/logout
 Content-Type: application/json
+
+
+### get all
+GET localhost:8888/user/all
+Content-Type: application/json
+
+### add category
+POST localhost:8888/user/category/21
+Content-Type: application/json
+
+{
+"categoryName" : "boyadzhia"
+}
+

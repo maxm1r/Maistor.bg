@@ -1,8 +1,21 @@
 ### create post
-POST localhost:8888/post/{id}
+POST localhost:8888/post/21
 Content-Type: application/json
+
 {
 "categoryName" : "boyadzhia",
-"description" : "mnogo boyadisvam",
+"description" : "Mnogo boyadisvam",
 "cityName" : "sofia"
 }
+
+### delete post
+DELETE localhost:8888/post/15
+Content-Type: application/json
+
+{
+}
+
+
+### get all posts
+GET localhost:8888/post/all
+Content-Type: application/json

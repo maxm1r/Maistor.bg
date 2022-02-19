@@ -1,0 +1,23 @@
+
+### create offer
+POST localhost:8888/offer/21
+Content-Type: application/json
+
+{
+  "postId" : 21,
+  "pricePerHour" : 5.5,
+  "hoursNeeded" : 20,
+  "daysNeeded" : 4
+}
+
+
+
+### accept offer
+POST localhost:8888/post/21/offer/22
+Content-Type: application/json
+
+{
+
+}
+
+

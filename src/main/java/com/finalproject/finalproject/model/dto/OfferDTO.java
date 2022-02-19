@@ -19,11 +19,11 @@ import java.time.LocalDateTime;
 public class OfferDTO {
 
     private int id;
-    private PostResponseDTO post;
+    private PostForOfferResponseDTO post;
     private UserWithoutPasswordDTO user;
     private double pricePerHour;
     private LocalDateTime offer_date;
     private int hoursNeeded;
-    private int dayNeeded;
+    private int daysNeeded;
 
 }
