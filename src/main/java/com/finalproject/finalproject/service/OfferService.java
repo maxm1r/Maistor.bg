@@ -1,8 +1,8 @@
 package com.finalproject.finalproject.service;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
-import com.finalproject.finalproject.model.dto.OfferCreateDTO;
-import com.finalproject.finalproject.model.dto.OfferDTO;
+import com.finalproject.finalproject.model.dto.OfferDTOS.OfferCreateDTO;
+import com.finalproject.finalproject.model.dto.OfferDTOS.OfferDTO;
 import com.finalproject.finalproject.model.pojo.Offer;
 import com.finalproject.finalproject.model.pojo.Post;
 import com.finalproject.finalproject.model.pojo.User;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @Service
 public class OfferService {

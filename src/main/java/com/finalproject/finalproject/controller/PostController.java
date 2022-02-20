@@ -1,15 +1,13 @@
 package com.finalproject.finalproject.controller;
 
-import com.finalproject.finalproject.model.dto.PostDTO;
-import com.finalproject.finalproject.model.dto.PostResponseDTO;
-import com.finalproject.finalproject.model.pojo.Post;
+import com.finalproject.finalproject.model.dto.postDTOS.PostDTO;
+import com.finalproject.finalproject.model.dto.postDTOS.PostResponseDTO;
 import com.finalproject.finalproject.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 
 @RestController

@@ -1,5 +1,6 @@
-package com.finalproject.finalproject.model.dto;
+package com.finalproject.finalproject.model.dto.commentDTOS;
 
+import com.finalproject.finalproject.model.dto.userDTOS.UserWithoutCommentDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

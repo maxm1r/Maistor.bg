@@ -1,7 +1,6 @@
 package com.finalproject.finalproject.model.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.finalproject.finalproject.model.dto.UserRegisterRequestDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

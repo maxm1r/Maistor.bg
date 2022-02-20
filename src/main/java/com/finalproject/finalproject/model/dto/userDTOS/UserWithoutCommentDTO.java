@@ -1,4 +1,4 @@
-package com.finalproject.finalproject.model.dto;
+package com.finalproject.finalproject.model.dto.userDTOS;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

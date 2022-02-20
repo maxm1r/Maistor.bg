@@ -1,4 +1,4 @@
-package com.finalproject.finalproject.model.dto;
+package com.finalproject.finalproject.model.dto.OfferDTOS;
 
 import com.finalproject.finalproject.model.pojo.Post;
 import com.finalproject.finalproject.model.pojo.User;

@@ -1,15 +1,11 @@
-package com.finalproject.finalproject.model.dto;
+package com.finalproject.finalproject.model.dto.commentDTOS;
 
-import com.finalproject.finalproject.exceptions.NotFoundException;
+import com.finalproject.finalproject.model.dto.userDTOS.UserWithoutPasswordDTO;
 import com.finalproject.finalproject.model.pojo.Comment;
-import com.finalproject.finalproject.model.pojo.User;
-import com.finalproject.finalproject.model.repositories.UserRepository;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 

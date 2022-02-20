@@ -1,28 +1,31 @@
-package com.finalproject.finalproject.model.dto;
+package com.finalproject.finalproject.model.dto.userDTOS;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.finalproject.finalproject.model.pojo.Category;
-import com.finalproject.finalproject.model.pojo.User;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.ManyToMany;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Set;
-@Component
+
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserWithoutPasswordDTO {
-
-    private int id;
+@AllArgsConstructor
+@Component
+public class UserRegisterRequestDTO {
     private String firstName;
     private String lastName;
     private String email;
+    private String password;
+    private String confirmPassword;
+    @JsonProperty
     private boolean isWorkman;
-    private String profilePicture;
     private String phoneNumber;
-    private Set<CategoryDTO> categories;
 
 }

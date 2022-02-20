@@ -1,12 +1,11 @@
 package com.finalproject.finalproject.controller;
 
 import com.finalproject.finalproject.model.dto.*;
+import com.finalproject.finalproject.model.dto.userDTOS.*;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.service.UserService;
-import com.finalproject.finalproject.utility.UserUtility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +29,7 @@ public class UserController extends CustomExceptionHandler {
         return ResponseEntity.ok(userService.register(registerDTO));
     }
     @PostMapping("/login")
-    public UserLoginResponseDTO login(@RequestBody User user, HttpSession session,HttpServletRequest request){
+    public UserLoginResponseDTO login(@RequestBody UserLoginRequestDTO user, HttpSession session, HttpServletRequest request){
         String email = user.getEmail();
         String password = user.getPassword();
         User u = userService.login(email, password);

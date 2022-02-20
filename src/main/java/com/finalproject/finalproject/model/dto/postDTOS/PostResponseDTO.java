@@ -1,7 +1,7 @@
-package com.finalproject.finalproject.model.dto;
+package com.finalproject.finalproject.model.dto.postDTOS;
 
-import com.finalproject.finalproject.model.pojo.Offer;
-import com.finalproject.finalproject.model.pojo.User;
+import com.finalproject.finalproject.model.dto.OfferDTOS.OfferForPostResponseDTO;
+import com.finalproject.finalproject.model.dto.userDTOS.UserWithoutPasswordDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

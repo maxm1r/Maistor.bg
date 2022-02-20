@@ -3,6 +3,10 @@ package com.finalproject.finalproject.service;
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
 import com.finalproject.finalproject.model.dto.*;
+import com.finalproject.finalproject.model.dto.userDTOS.UserRegisterRequestDTO;
+import com.finalproject.finalproject.model.dto.userDTOS.UserRegisterResponseDTO;
+import com.finalproject.finalproject.model.dto.userDTOS.UserWithRating;
+import com.finalproject.finalproject.model.dto.userDTOS.UserWithoutPasswordDTO;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.CategoryRepository;
@@ -16,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 

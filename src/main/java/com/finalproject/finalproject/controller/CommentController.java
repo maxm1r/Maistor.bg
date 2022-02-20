@@ -1,20 +1,19 @@
 package com.finalproject.finalproject.controller;
 
-import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.ForbiddenException;
 import com.finalproject.finalproject.exceptions.NotFoundException;
-import com.finalproject.finalproject.exceptions.UnauthorizedException;
-import com.finalproject.finalproject.model.dto.CommentDTO;
-import com.finalproject.finalproject.model.dto.CommentWithOwnerDTO;
-import com.finalproject.finalproject.model.dto.CommentWithoutUserPasswordDTO;
-import com.finalproject.finalproject.model.dto.UserWithoutCommentDTO;
+import com.finalproject.finalproject.model.dto.commentDTOS.CommentDTO;
+import com.finalproject.finalproject.model.dto.commentDTOS.CommentWithOwnerDTO;
+import com.finalproject.finalproject.model.dto.commentDTOS.CommentWithoutUserPasswordDTO;
+import com.finalproject.finalproject.model.dto.commentDTOS.ReplyDTO;
+import com.finalproject.finalproject.model.dto.userDTOS.UserWithoutCommentDTO;
 import com.finalproject.finalproject.model.pojo.Comment;
 import com.finalproject.finalproject.model.pojo.User;
-import com.finalproject.finalproject.model.repositories.CommentRepository;
 import com.finalproject.finalproject.model.repositories.UserRepository;
 import com.finalproject.finalproject.service.CommentService;
 import com.finalproject.finalproject.utility.UserUtility;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,13 +86,16 @@ public class CommentController {
         c.setPostedDate(LocalDateTime.now());
         c.setText(comment.getText());
         commentService.edit(c);
+
         CommentDTO dto = mapper.map(c, CommentDTO.class);
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/{id}/replies")
-    public ResponseEntity<List<Comment>> getReplies(@PathVariable int id){
+    public ResponseEntity<List<ReplyDTO>> getReplies(@PathVariable int id){
         //TODO  return DTO
-        return ResponseEntity.ok(commentService.getAllByParentId(id));
+        List<Comment> comments = commentService.getAllByParentId(id);
+        List<ReplyDTO> replies = mapper.map(comments, new TypeToken<List<ReplyDTO>>() {}.getType());
+        return ResponseEntity.ok(replies);
     }
 }

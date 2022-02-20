@@ -1,11 +1,9 @@
 package com.finalproject.finalproject.utility;
 
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
-import com.finalproject.finalproject.model.dto.UserRegisterRequestDTO;
+import com.finalproject.finalproject.model.dto.userDTOS.UserRegisterRequestDTO;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.User;
-import com.finalproject.finalproject.model.repositories.RateRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

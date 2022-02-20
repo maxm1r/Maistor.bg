@@ -3,8 +3,9 @@ package com.finalproject.finalproject.service;
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
-import com.finalproject.finalproject.model.dto.CommentDTO;
-import com.finalproject.finalproject.model.dto.CommentWithoutUserPasswordDTO;
+import com.finalproject.finalproject.model.dto.commentDTOS.CommentDTO;
+import com.finalproject.finalproject.model.dto.commentDTOS.CommentWithoutUserPasswordDTO;
+import com.finalproject.finalproject.model.dto.commentDTOS.ReplyDTO;
 import com.finalproject.finalproject.model.pojo.Comment;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.CommentRepository;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletionException;
 
 @Service
 public class CommentService {
@@ -68,10 +68,9 @@ public class CommentService {
         }
     }
 
-    //TODO getAllByParentId
 
     public List<Comment> getAllByParentId(int id){
-        Comment comment = commentRepository.findById(id).orElseThrow(()-> new NotFoundException("Comment not found!"));
+        Comment comment = getCommentById(id);
         return commentRepository.findAllByParentComment(comment);
     }
 

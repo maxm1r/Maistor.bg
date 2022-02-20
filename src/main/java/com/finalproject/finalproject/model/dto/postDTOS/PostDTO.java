@@ -1,4 +1,4 @@
-package com.finalproject.finalproject.model.dto;
+package com.finalproject.finalproject.model.dto.postDTOS;
 
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.City;
