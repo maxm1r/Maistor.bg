@@ -1,0 +1,12 @@
+
+### rate
+POST localhost:8888/rate/22/20
+Content-Type: application/json
+
+{
+  "rate" : 5
+}
+
+### get user rate
+GET localhost:8888/user/rate/20
+Content-Type: application/json

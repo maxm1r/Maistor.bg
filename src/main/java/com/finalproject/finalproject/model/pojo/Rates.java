@@ -17,11 +17,11 @@ public class Rates {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "user_rated_id")
+    @JoinColumn(name = "user_id")
     private User user;
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_rated_id")
     private User ratedWorkman;
-    private double rating;
+    private int rating;
 
 }

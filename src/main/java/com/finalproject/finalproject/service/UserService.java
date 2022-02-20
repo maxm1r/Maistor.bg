@@ -6,6 +6,7 @@ import com.finalproject.finalproject.model.dto.*;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.CategoryRepository;
+import com.finalproject.finalproject.model.repositories.RateRepository;
 import com.finalproject.finalproject.model.repositories.UserRepository;
 import com.finalproject.finalproject.utility.UserUtility;
 import org.modelmapper.ModelMapper;
@@ -13,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,6 +29,8 @@ public class UserService {
     CategoryRepository categoryRepository;
     @Autowired
     ModelMapper modelMapper;
+    @Autowired
+    RateRepository rateRepository;
 
 
     public UserRegisterResponseDTO register(UserRegisterRequestDTO registerDTO) {
@@ -144,5 +150,17 @@ public class UserService {
                 .stream()
                 .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class))
                 .collect(Collectors.toSet());
+    }
+
+    public UserWithRating getUserRatebyId(int id) {
+        if (userRepository.findById(id).isEmpty()){
+            throw new BadRequestException("Bad user id");
+        }
+        User user = userRepository.findById(id).get();
+        UserWithRating userWithRating = modelMapper.map(user,UserWithRating.class);
+        double rate = rateRepository.getAverageRatingForUser(id);
+        BigDecimal bd = new BigDecimal(rate).setScale(2, RoundingMode.HALF_UP);
+        userWithRating.setRating(bd.doubleValue());
+        return userWithRating;
     }
 }

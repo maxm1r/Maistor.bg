@@ -3,12 +3,12 @@ POST localhost:8888/user
 Content-Type: application/json
 
 {
-  "email" : "marto4@abv.bg",
+  "email" : "tnt@abv.bg",
   "password" : "m1235",
   "confirmPassword": "m1235",
   "firstName": "Marto",
   "lastName": "Ivanov",
-  "phoneNumber": "0812311235",
+  "phoneNumber": "08122311235",
   "isWorkman": true
 }
 
@@ -17,7 +17,7 @@ POST localhost:8888/login
 Content-Type: application/json
 
 {
-  "email" : "marto2@abv.bg",
+  "email" : "tnt@abv.bg",
   "password" : "m1235"
 }
 

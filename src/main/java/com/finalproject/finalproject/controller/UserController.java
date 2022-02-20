@@ -71,6 +71,11 @@ public class UserController extends CustomExceptionHandler {
         return ResponseEntity.ok(userService.getAllWorkmans());
     }
 
+    @GetMapping("/user/rate/{id}")
+    public ResponseEntity<UserWithRating> getUserRateById(@PathVariable int id){
+        return ResponseEntity.ok(userService.getUserRatebyId(id));
+    }
+
     @PutMapping("/user")
     public ResponseEntity<EditUserDTO> editUser(@RequestBody EditUserDTO dto){
         return ResponseEntity.ok(userService.edinUser(dto));
@@ -80,6 +85,7 @@ public class UserController extends CustomExceptionHandler {
     public void logOut(HttpSession session){
         session.invalidate();
     }
+
 
 
 }

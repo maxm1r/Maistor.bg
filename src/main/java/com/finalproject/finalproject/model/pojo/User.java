@@ -35,15 +35,7 @@ public class User {
     private Set<Post> posts = new HashSet<>();
 
 
-    public User(UserRegisterRequestDTO dto) {
-        this.firstName = dto.getFirstName();
-        this.lastName = dto.getLastName();
-        this.email = dto.getEmail();
-        this.password = dto.getPassword();
-        this.phoneNumber = dto.getPhoneNumber();
-        this.isWorkman = dto.isWorkman();
-        this.categories = new HashSet<Category>();
-    }
+
 
 
 }
