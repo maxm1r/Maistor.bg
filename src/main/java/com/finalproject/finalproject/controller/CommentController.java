@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -36,14 +35,14 @@ public class CommentController {
     private ModelMapper mapper;
 
     @PostMapping("/{id}/comments")
-    public CommentWithoutUserPasswordDTO add(@RequestBody CommentResponseDTO comment, HttpSession session, HttpServletRequest request, @PathVariable int id){
-        UserUtility.validateLogin(session, request);
-        return commentService.addComment(comment, (Integer)session.getAttribute(UserController.USER_ID), id);
+    public CommentWithoutUserPasswordDTO add(@RequestBody CommentResponseDTO comment, HttpServletRequest request, @PathVariable int id){
+        UserUtility.validateLogin(request.getSession(), request);
+        return commentService.addComment(comment, (Integer)request.getSession().getAttribute(UserController.USER_ID), id);
     }
 
     @GetMapping("/comments/{id}")
-        public CommentWithOwnerDTO getById(@PathVariable int id,HttpSession session,HttpServletRequest request){
-            UserUtility.validateLogin(session,request);
+        public CommentWithOwnerDTO getById(@PathVariable int id,HttpServletRequest request){
+            UserUtility.validateLogin(request.getSession(),request);
             Comment comment = commentService.getCommentById(id);
             CommentWithOwnerDTO dto = new CommentWithOwnerDTO();
             dto.setId(comment.getId());
@@ -54,13 +53,13 @@ public class CommentController {
         }
 
     @DeleteMapping("/comments/{id}")
-        public CommentWithoutUserPasswordDTO delete(@PathVariable int id,HttpSession session,HttpServletRequest request){
-        UserUtility.validateLogin(session,request);
+        public CommentWithoutUserPasswordDTO delete(@PathVariable int id,HttpServletRequest request){
+        UserUtility.validateLogin(request.getSession(),request);
         int commentId= commentService.getCommentById(id).getOwnerId().getId();
         Comment comment = new Comment();
 
         comment.setId(id);
-        if((Integer) session.getAttribute(UserController.USER_ID) != commentId){
+        if((Integer) request.getSession().getAttribute(UserController.USER_ID) != commentId){
             throw new ForbiddenException("You are not the owner of this comment!");
         }
 
@@ -70,14 +69,14 @@ public class CommentController {
     }
 
     @PutMapping("/{id}/comments")
-    public ResponseEntity<CommentResponseDTO> edit(@RequestBody CommentResponseDTO comment, @PathVariable int id, HttpSession session, HttpServletRequest request){
-        UserUtility.validateLogin(session,request);
+    public ResponseEntity<CommentResponseDTO> edit(@RequestBody CommentResponseDTO comment, @PathVariable int id, HttpServletRequest request){
+        UserUtility.validateLogin(request.getSession(),request);
         Comment c = commentService.getCommentById(comment.getId());
-        if((Integer) session.getAttribute(UserController.USER_ID) != c.getOwnerId().getId()){
+        if((Integer) request.getSession().getAttribute(UserController.USER_ID) != c.getOwnerId().getId()){
             throw new ForbiddenException("You are not the owner of this comment!");
         }
 
-        Integer userId = (Integer) session.getAttribute(UserController.USER_ID);
+        Integer userId = (Integer) request.getSession().getAttribute(UserController.USER_ID);
         Optional<User> u = userRepository.findById(userId);
         c.setId(comment.getId());
         c.setOwnerId(u.orElseThrow(()-> new NotFoundException("User not found!")));

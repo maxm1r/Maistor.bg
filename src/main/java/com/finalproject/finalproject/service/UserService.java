@@ -1,6 +1,8 @@
 package com.finalproject.finalproject.service;
 
+import com.finalproject.finalproject.controller.UserController;
 import com.finalproject.finalproject.exceptions.BadRequestException;
+import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
 import com.finalproject.finalproject.model.dto.*;
 import com.finalproject.finalproject.model.dto.userDTOS.UserRegisterRequestDTO;
@@ -13,13 +15,21 @@ import com.finalproject.finalproject.model.repositories.CategoryRepository;
 import com.finalproject.finalproject.model.repositories.RateRepository;
 import com.finalproject.finalproject.model.repositories.UserRepository;
 import com.finalproject.finalproject.utility.UserUtility;
+import lombok.SneakyThrows;
+import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -137,7 +147,7 @@ public class UserService {
     public UserWithoutPasswordDTO getUserByID(int id) {
         User user = userRepository.getById(id);
         if (user == null){
-            throw new BadRequestException("There is no user with id:"+id);
+            throw new NotFoundException("There is no user with id: "+id);
         }
         return modelMapper.map(user,UserWithoutPasswordDTO.class);
     }
@@ -148,7 +158,7 @@ public class UserService {
                 .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class)).collect(Collectors.toSet());
     }
 
-    public Set<UserWithoutPasswordDTO> getAllWorkmans() {
+    public Set<UserWithoutPasswordDTO> getAllWorkmen() {
         return userRepository.findAllWorkmans()
                 .stream()
                 .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class))
@@ -165,5 +175,19 @@ public class UserService {
         BigDecimal bd = new BigDecimal(rate).setScale(2, RoundingMode.HALF_UP);
         userWithRating.setRating(bd.doubleValue());
         return userWithRating;
+    }
+
+    @SneakyThrows
+    public String uploadFile(MultipartFile file , HttpServletRequest request){
+        UserUtility.validateLogin(request.getSession(),request);
+        int loggedUserId = (int) request.getSession().getAttribute(UserController.USER_ID);
+        String name = String.valueOf(System.nanoTime());
+        String ext = FilenameUtils.getExtension(file.getOriginalFilename());
+        File holder = new File("uploads" + File.separator + name + "." + ext);
+        Files.copy(file.getInputStream(), Path.of(holder.toURI()));
+        User u = userRepository.findById(loggedUserId).orElseThrow(()-> new NotFoundException("User not found!"));;
+        u.setProfilePicture(name);
+        userRepository.save(u);
+        return holder.getName();
     }
 }

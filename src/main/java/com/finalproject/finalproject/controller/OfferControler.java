@@ -21,8 +21,8 @@ public class OfferControler {
     OfferService offerService;
 
     @PostMapping("offer/{id}")
-    public ResponseEntity<OfferDTO> createOffer(@PathVariable int id, HttpSession session, HttpServletRequest request, @RequestBody OfferCreateDTO offer){
-        UserUtility.validateLogin(session,request);
+    public ResponseEntity<OfferDTO> createOffer(@PathVariable int id, HttpServletRequest request, @RequestBody OfferCreateDTO offer){
+        UserUtility.validateLogin(request.getSession(),request);
         return ResponseEntity.ok(offerService.createOffer(offer,id));
     }
 }

@@ -15,5 +15,6 @@ public class UserWithCommentDTO {
     private int id;
     private String firstName;
     private String lastName;
+    private String profilePicture;
     List<CommentWithoutOwnerDTO> comments;
 }

@@ -18,8 +18,8 @@ public class RateController {
     @Autowired
     RateService rateService;
     @PostMapping("/rate/{raterId}/{ratedId}")
-    public ResponseEntity<RateResponseDTO> rate(@PathVariable int raterId, @PathVariable int ratedId, @RequestBody RateDTO rating, HttpSession session, HttpServletRequest request){
-        return ResponseEntity.ok(rateService.createRate(raterId,ratedId,rating,session,request));
+    public ResponseEntity<RateResponseDTO> rate(@PathVariable int raterId, @PathVariable int ratedId, @RequestBody RateDTO rating, HttpServletRequest request){
+        return ResponseEntity.ok(rateService.createRate(raterId,ratedId,rating,request.getSession(),request));
     }
 
 }

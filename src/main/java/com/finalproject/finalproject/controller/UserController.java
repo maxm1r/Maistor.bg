@@ -4,8 +4,6 @@ import com.finalproject.finalproject.model.dto.*;
 import com.finalproject.finalproject.model.dto.userDTOS.*;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.service.UserService;
-import lombok.SneakyThrows;
-import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Set;
 
 @RestController
@@ -35,14 +30,14 @@ public class UserController extends CustomExceptionHandler {
         return ResponseEntity.ok(userService.register(registerDTO));
     }
     @PostMapping("/login")
-    public UserLoginResponseDTO login(@RequestBody UserLoginRequestDTO user, HttpSession session, HttpServletRequest request){
+    public UserWithCommentDTO login(@RequestBody UserLoginRequestDTO user, HttpSession session, HttpServletRequest request){
         String email = user.getEmail();
         String password = user.getPassword();
         User u = userService.login(email, password);
         session.setAttribute(LOGGED, true);
         session.setAttribute("logged_from",request.getRemoteAddr());
         session.setAttribute(USER_ID, u.getId());
-        UserLoginResponseDTO dto = modelMapper.map(u, UserLoginResponseDTO.class);
+        UserWithCommentDTO dto = modelMapper.map(u, UserWithCommentDTO.class);
         return dto;
     }
 
@@ -71,9 +66,9 @@ public class UserController extends CustomExceptionHandler {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("user/allWorkMans")
-    public ResponseEntity<Set<UserWithoutPasswordDTO>> getAllWorkmans(){
-        return ResponseEntity.ok(userService.getAllWorkmans());
+    @GetMapping("user/allWorkMen")
+    public ResponseEntity<Set<UserWithoutPasswordDTO>> getAllWorkmen(){
+        return ResponseEntity.ok(userService.getAllWorkmen());
     }
 
     @GetMapping("/user/rate/{id}")
@@ -91,14 +86,9 @@ public class UserController extends CustomExceptionHandler {
         session.invalidate();
     }
 
-    @SneakyThrows
     @PostMapping("/users/image")
-    public String uploadProfileImage(@RequestParam(name = "file")MultipartFile file){
-        String name = String.valueOf(System.nanoTime());
-        String ext = FilenameUtils.getExtension(file.getOriginalFilename());
-        File holder = new File("uploads" + File.separator + name + "." + ext);
-        Files.copy(file.getInputStream(), Path.of(holder.toURI()));
-        return holder.getName();
+    public String uploadProfileImage(@RequestParam(name = "file")MultipartFile file, HttpServletRequest request){
+        return  userService.uploadFile(file,request);
     }
 
 
