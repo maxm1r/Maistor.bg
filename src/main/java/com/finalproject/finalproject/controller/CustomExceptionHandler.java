@@ -14,6 +14,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
     public ExceptionDTO badRequestExceptionHandler(BadRequestException e){
         ExceptionDTO dto = new ExceptionDTO();
         dto.setMsg(e.getMessage());
@@ -35,6 +36,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {NotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
     public ExceptionDTO handleNotFound(Exception e){
         ExceptionDTO dto = new ExceptionDTO();
         dto.setMsg(e.getMessage());
@@ -45,6 +47,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {ForbiddenException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
     public ExceptionDTO handleForbiddenException(Exception e){
         ExceptionDTO dto = new ExceptionDTO();
         dto.setMsg(e.getMessage());

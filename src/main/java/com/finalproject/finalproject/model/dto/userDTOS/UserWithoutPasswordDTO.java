@@ -1,24 +1,21 @@
-package com.finalproject.finalproject.model.dto;
+package com.finalproject.finalproject.model.dto.userDTOS;
 
+import com.finalproject.finalproject.model.dto.CategoryDTO;
 import com.finalproject.finalproject.model.pojo.Category;
-import com.finalproject.finalproject.model.pojo.Post;
-import lombok.AllArgsConstructor;
+import com.finalproject.finalproject.model.pojo.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
+@Component
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Component
-public class UserWithRating {
+public class UserWithoutPasswordDTO {
 
     private int id;
     private String firstName;
@@ -27,6 +24,6 @@ public class UserWithRating {
     private boolean isWorkman;
     private String profilePicture;
     private String phoneNumber;
-    private Set<Category> categories = new HashSet<>();
-    private double rating;
+    private Set<CategoryDTO> categories;
+
 }

@@ -1,8 +1,8 @@
 package com.finalproject.finalproject.service;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
-import com.finalproject.finalproject.model.dto.PostDTO;
-import com.finalproject.finalproject.model.dto.PostResponseDTO;
+import com.finalproject.finalproject.model.dto.postDTOS.PostDTO;
+import com.finalproject.finalproject.model.dto.postDTOS.PostResponseDTO;
 import com.finalproject.finalproject.model.pojo.*;
 import com.finalproject.finalproject.model.repositories.*;
 import com.finalproject.finalproject.utility.UserUtility;
@@ -10,11 +10,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

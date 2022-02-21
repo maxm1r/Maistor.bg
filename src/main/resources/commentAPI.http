@@ -20,16 +20,12 @@ PUT localhost:8888/4/comments
 Content-Type: application/json
 
 {
-  "id": 9,
+  "id": 13,
   "text" : "commentEdiasdt"
 }
 
 
-<<<<<<< HEAD
 ### getReplies
 GET localhost:8888/9/replies
 Content-Type: application/json
-=======
 
-}
->>>>>>> cf551161a217007bde9345fb6d9a6cb04e17654b

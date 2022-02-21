@@ -1,22 +1,35 @@
 package com.finalproject.finalproject.service;
 
+import com.finalproject.finalproject.controller.UserController;
 import com.finalproject.finalproject.exceptions.BadRequestException;
+import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
 import com.finalproject.finalproject.model.dto.*;
+import com.finalproject.finalproject.model.dto.userDTOS.UserRegisterRequestDTO;
+import com.finalproject.finalproject.model.dto.userDTOS.UserRegisterResponseDTO;
+import com.finalproject.finalproject.model.dto.userDTOS.UserWithRating;
+import com.finalproject.finalproject.model.dto.userDTOS.UserWithoutPasswordDTO;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.CategoryRepository;
 import com.finalproject.finalproject.model.repositories.RateRepository;
 import com.finalproject.finalproject.model.repositories.UserRepository;
 import com.finalproject.finalproject.utility.UserUtility;
+import lombok.SneakyThrows;
+import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,19 +37,21 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
     @Autowired
-    ModelMapper modelMapper;
+    private ModelMapper modelMapper;
     @Autowired
-    RateRepository rateRepository;
+    private RateRepository rateRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     public UserRegisterResponseDTO register(UserRegisterRequestDTO registerDTO) {
 
         if (!UserUtility.passMatch(registerDTO)){
-            throw new BadRequestException("Passwords dont match");
+            throw new BadRequestException("Passwords don't match");
         }
         if (!UserUtility.isEmailValid(registerDTO)){
             throw new BadRequestException("Invalid email");
@@ -45,19 +60,20 @@ public class UserService {
             throw  new BadRequestException("Email already exist");
         }
         if(registerDTO.getFirstName().isEmpty()){
-            throw new BadRequestException("Enter you first name!");
+            throw new BadRequestException("Enter your first name!");
         }
         if(registerDTO.getLastName().isEmpty()){
-            throw new BadRequestException("Enter you last name!");
+            throw new BadRequestException("Enter your last name!");
         }
         if(registerDTO.getPhoneNumber().isEmpty()){
-            throw new BadRequestException("Enter you phone number!");
+            throw new BadRequestException("Enter your phone number!");
         }
         if (userRepository.findUserByPhoneNumber(registerDTO.getPhoneNumber()) != null){
             throw new BadRequestException("The phone is already registered!");
         }
         // TODO real email verification , real password verification, phone verification
         User user = modelMapper.map(registerDTO,User.class);
+        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         user = userRepository.save(user);
         return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
@@ -71,6 +87,9 @@ public class UserService {
         }
         User u = userRepository.findByEmail(email);
         if(u == null){
+            throw new UnauthorizedException("Wrong credentials");
+        }
+        if(!passwordEncoder.matches(password, u.getPassword())){
             throw new UnauthorizedException("Wrong credentials");
         }
         return u;
@@ -134,7 +153,7 @@ public class UserService {
     public UserWithoutPasswordDTO getUserByID(int id) {
         User user = userRepository.getById(id);
         if (user == null){
-            throw new BadRequestException("There is no user with id:"+id);
+            throw new NotFoundException("There is no user with id: "+id);
         }
         return modelMapper.map(user,UserWithoutPasswordDTO.class);
     }
@@ -145,7 +164,7 @@ public class UserService {
                 .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class)).collect(Collectors.toSet());
     }
 
-    public Set<UserWithoutPasswordDTO> getAllWorkmans() {
+    public Set<UserWithoutPasswordDTO> getAllWorkmen() {
         return userRepository.findAllWorkmans()
                 .stream()
                 .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class))
@@ -162,5 +181,19 @@ public class UserService {
         BigDecimal bd = new BigDecimal(rate).setScale(2, RoundingMode.HALF_UP);
         userWithRating.setRating(bd.doubleValue());
         return userWithRating;
+    }
+
+    @SneakyThrows
+    public String uploadFile(MultipartFile file , HttpServletRequest request){
+        UserUtility.validateLogin(request.getSession(),request);
+        int loggedUserId = (int) request.getSession().getAttribute(UserController.USER_ID);
+        String name = String.valueOf(System.nanoTime());
+        String ext = FilenameUtils.getExtension(file.getOriginalFilename());
+        File holder = new File("uploads" + File.separator + name + "." + ext);
+        Files.copy(file.getInputStream(), Path.of(holder.toURI()));
+        User u = userRepository.findById(loggedUserId).orElseThrow(()-> new NotFoundException("User not found!"));;
+        u.setProfilePicture(name);
+        userRepository.save(u);
+        return holder.getName();
     }
 }

@@ -3,8 +3,8 @@ package com.finalproject.finalproject.service;
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
-import com.finalproject.finalproject.model.dto.CommentDTO;
-import com.finalproject.finalproject.model.dto.CommentWithoutUserPasswordDTO;
+import com.finalproject.finalproject.model.dto.commentDTOS.CommentResponseDTO;
+import com.finalproject.finalproject.model.dto.commentDTOS.CommentWithoutUserPasswordDTO;
 import com.finalproject.finalproject.model.pojo.Comment;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.CommentRepository;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletionException;
 
 @Service
 public class CommentService {
@@ -25,12 +24,16 @@ public class CommentService {
     @Autowired
     private UserRepository userRepository;
 
-    public CommentWithoutUserPasswordDTO addComment(CommentDTO commentDTO, Integer userId, Integer workmanID){
+    public CommentWithoutUserPasswordDTO addComment(CommentResponseDTO commentDTO, Integer userId, Integer workmanID){
         if (userId ==null ){
             throw new UnauthorizedException("Please login");
         }
         if (commentDTO.getText().isEmpty() || commentDTO.getText().isBlank()){
             throw new BadRequestException("There is no text in the comment body!");
+        }
+        User u = userRepository.findById(workmanID).orElseThrow(()-> new NotFoundException("User not found!"));
+        if (!u.isWorkman()){
+            throw new BadRequestException("You can comment only workmen!");
         }
         Comment comment = new Comment();
         comment.setText(commentDTO.getText());
@@ -43,8 +46,8 @@ public class CommentService {
         return dto;
     }
 
-    public Comment getComment(int id){
-        return getCommentById(id);
+    public Comment getCommentById(int id){
+        return commentRepository.findById(id).orElseThrow(()-> new NotFoundException("Comment not found!"));
     }
 
     public boolean deleteCommentById(Integer id) {
@@ -68,16 +71,12 @@ public class CommentService {
         }
     }
 
-    //TODO getAllByParentId
 
     public List<Comment> getAllByParentId(int id){
         Comment comment = commentRepository.findById(id).orElseThrow(()-> new NotFoundException("Comment not found!"));
         return commentRepository.findAllByParentComment(comment);
     }
 
-    private Comment getCommentById(int id){
-        return commentRepository.findById(id).orElseThrow(()-> new NotFoundException("Comment not found!"));
-    }
     private User getUserById(int id){
         return userRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found"));
     }

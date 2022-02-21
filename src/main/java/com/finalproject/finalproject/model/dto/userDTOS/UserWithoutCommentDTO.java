@@ -1,18 +1,15 @@
-package com.finalproject.finalproject.model.dto;
+package com.finalproject.finalproject.model.dto.userDTOS;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserWithCommentDTO {
+public class UserWithoutCommentDTO {
 
     private int id;
     private String firstName;
     private String lastName;
-    List<CommentWithoutOwnerDTO> comments;
 }
