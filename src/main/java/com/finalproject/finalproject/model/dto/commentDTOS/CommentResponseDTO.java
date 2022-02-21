@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CommentDTO {
+public class CommentResponseDTO {
 
     private int id;
     private String text;
