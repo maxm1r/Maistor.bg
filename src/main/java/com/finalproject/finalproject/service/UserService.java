@@ -132,29 +132,25 @@ public class UserService {
     }
 
     public Set<UserWithoutPasswordDTO> getAllUsersForCategory(String categoryName) {
-        Category category = categoryRepository.findByCategoryName(categoryName);
+        Category category = categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new BadRequestException("Category not found"));
         return userRepository.getAllByCategoriesContaining(category)
                 .stream()
                 .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class))
                 .collect(Collectors.toSet());
     }
 
-    public EditUserDTO edinUser(EditUserDTO dto) {
-        User user = userRepository.getById(dto.getId());
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
-        user.setEmail(dto.getEmail());
-        user.setPhoneNumber(dto.getPhoneNumber());
-        user.setProfilePicture(dto.getProfilePicture());
+    public EditUserDTO edinUser(EditUserDTO dto, int id) {
+        if (dto.getId() != id){
+            throw new BadRequestException("This user can't edit other users profiles");
+        }
+        User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        user = modelMapper.map(dto,User.class);
         user = userRepository.save(user);
         return modelMapper.map(user,EditUserDTO.class);
     }
 
     public UserWithoutPasswordDTO getUserByID(int id) {
-        User user = userRepository.getById(id);
-        if (user == null){
-            throw new NotFoundException("There is no user with id: "+id);
-        }
+        User user = userRepository.findById(id).orElseThrow(()->new BadRequestException("User not found"));
         return modelMapper.map(user,UserWithoutPasswordDTO.class);
     }
 
@@ -173,7 +169,7 @@ public class UserService {
 
     public UserWithRating getUserRatebyId(int id) {
         if (userRepository.findById(id).isEmpty()){
-            throw new BadRequestException("Bad user id");
+            throw new BadRequestException("User not found");
         }  
         User user = userRepository.findById(id).get();
         UserWithRating userWithRating = modelMapper.map(user,UserWithRating.class);

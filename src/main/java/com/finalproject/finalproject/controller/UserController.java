@@ -4,6 +4,7 @@ import com.finalproject.finalproject.model.dto.*;
 import com.finalproject.finalproject.model.dto.userDTOS.*;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.service.UserService;
+import com.finalproject.finalproject.utility.UserUtility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,19 +42,21 @@ public class UserController extends CustomExceptionHandler {
         return dto;
     }
 
-    @PostMapping("/user/category/{id}")
-    public ResponseEntity<UserWithoutPasswordDTO> addCategory(@PathVariable int id , @RequestBody CategoryNameDto categoryName){
-        return ResponseEntity.ok(userService.addCategory(id,categoryName.getCategoryName()));
+    @PostMapping("/user/category")
+    public ResponseEntity<UserWithoutPasswordDTO> addCategory(@RequestBody CategoryNameDTO categoryName, HttpServletRequest request){
+        UserUtility.validateLogin(request.getSession(),request);
+        return ResponseEntity.ok(userService.addCategory((Integer) request.getSession().getAttribute(USER_ID),  categoryName.getCategoryName()));
     }
 
     @DeleteMapping("/user/category/{id}")
-    public ResponseEntity<UserWithoutPasswordDTO> removeCategory(@PathVariable int id, @RequestBody CategoryNameDto categoryName){
-        return ResponseEntity.ok(userService.removeCategory(id,categoryName.getCategoryName()));
+    public ResponseEntity<UserWithoutPasswordDTO> removeCategory(@RequestBody CategoryNameDTO categoryName, HttpServletRequest request){
+        UserUtility.validateLogin(request.getSession(),request);
+        return ResponseEntity.ok(userService.removeCategory((Integer) request.getSession().getAttribute(USER_ID),categoryName.getCategoryName()));
     }
 
     @GetMapping("/user/category/{categoryName}")
-    public ResponseEntity<Set<UserWithoutPasswordDTO>> getUsersForCategory(@PathVariable String categoryName){
-        return  ResponseEntity.ok(userService.getAllUsersForCategory(categoryName));
+    public ResponseEntity<Set<UserWithoutPasswordDTO>> getUsersForCategory(@PathVariable CategoryNameDTO categoryName){
+        return  ResponseEntity.ok(userService.getAllUsersForCategory(categoryName.getCategoryName()));
     }
 
     @GetMapping("/user/{id}")
@@ -77,8 +80,9 @@ public class UserController extends CustomExceptionHandler {
     }
 
     @PutMapping("/user")
-    public ResponseEntity<EditUserDTO> editUser(@RequestBody EditUserDTO dto){
-        return ResponseEntity.ok(userService.edinUser(dto));
+    public ResponseEntity<EditUserDTO> editUser(@RequestBody EditUserDTO dto,HttpServletRequest request){
+        UserUtility.validateLogin(request.getSession(), request);
+        return ResponseEntity.ok(userService.edinUser(dto, (Integer) request.getSession().getAttribute(USER_ID)));
     }
 
     @PostMapping("/logout")

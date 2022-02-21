@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryNameDto {
+public class CategoryNameDTO {
 
     private String categoryName;
 }

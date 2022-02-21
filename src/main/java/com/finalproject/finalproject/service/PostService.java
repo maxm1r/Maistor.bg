@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,88 +32,58 @@ public class PostService {
     @Autowired
     OfferRepository offerRepository;
 
-    @Transactional
     public PostResponseDTO createPost(int id, PostDTO postDTO) {
-
-        User user = userRepository.findById(id).orElse(null);
-        if (user == null){
-            throw new BadRequestException("No user with that id");
+        User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        Category category=categoryRepository.findByCategoryName(postDTO.getCategoryName())  .orElseThrow(()-> new BadRequestException("Category not found"));
+        City city = cityRepository.findByCityName(postDTO.getCityName()).orElseThrow(()-> new BadRequestException("City not found"));
+        if ( postDTO.getDescription().isEmpty() ||  postDTO.getDescription().isBlank()){
+            throw new BadRequestException("Bad description");
         }
-        if ( postDTO.getDescription() == null ||  postDTO.getDescription().isBlank()){
-            throw new BadRequestException("No description");
-        }
-        Post post = new Post();
         if (!UserUtility.userHasCategory(user,postDTO.getCategoryName())) {
             throw new BadRequestException("This user isn't qualified for that kind of work");
         }
-        post.setCategory(categoryRepository.findByCategoryName(postDTO.getCategoryName()));
+        Post post = new Post();
+        post.setCategory(category);
         post.setOwner(user);
         post.setDescription(postDTO.getDescription());
-        if (cityRepository.findByCityName(postDTO.getCityName()) == null){
-            throw new BadRequestException("No city with that name");
-        }
         post.setPostedDate(LocalDateTime.now());
-        post.setCity(cityRepository.findByCityName(postDTO.getCityName()));
+        post.setCity(city);
         post = postRepository.save(post);
         return  modelMapper.map(post, PostResponseDTO.class);
     }
-    public PostResponseDTO deletePost(int id){
-        if (postRepository.findById(id) == null){
-            throw new BadRequestException("No post with that id");
+    public PostResponseDTO deletePost(int id, int userId){
+        Post post = postRepository.findById(id).orElseThrow(()->new BadRequestException("Post not found"));
+        if (post.getOwner().getId() != userId){
+            throw new BadRequestException("User can't delete this post");
         }
-        Post post = postRepository.findById(id);
         postRepository.deleteById(id);
-        PostResponseDTO dto = modelMapper.map(post,PostResponseDTO.class);
-        return dto;
+        return modelMapper.map(post,PostResponseDTO.class);
     }
 
-    public List<PostResponseDTO> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
-        List<PostResponseDTO> dtos = posts.stream().map(post -> modelMapper.map(post,PostResponseDTO.class)).collect(Collectors.toList());
-        return dtos;
+    public Set<PostResponseDTO> getAllPosts() {
+        return postRepository.findAll().stream().map(post -> modelMapper.map(post,PostResponseDTO.class)).collect(Collectors.toSet());
     }
 
     public PostResponseDTO editPost(PostDTO postDTO, int id) {
-        Post post = postRepository.findById(id);
+        Post post = postRepository.findById(id).orElseThrow(()->new BadRequestException("Post not found"));
         if (postDTO.getDescription().isEmpty() || postDTO.getDescription().isBlank()){
             throw new BadRequestException("Bad Description");
         }
-        if (cityRepository.findByCityName(postDTO.getCityName()) == null){
-         throw  new BadRequestException("Bad city name");
-        }
-        if (categoryRepository.findByCategoryName(postDTO.getCategoryName()) == null){
-            throw new BadRequestException("Bad category name");
-        }
-        Category category = categoryRepository.findByCategoryName(postDTO.getCategoryName());
-        City city = cityRepository.findByCityName(postDTO.getCityName());
         post.setDescription(postDTO.getDescription());
-        post.setCategory(category);
-        post.setCity(city);
+        post.setCategory(categoryRepository.findByCategoryName(postDTO.getCategoryName()).orElseThrow(()-> new BadRequestException("Category not found")));
+        post.setCity(cityRepository.findByCityName(postDTO.getCityName()).orElseThrow(()-> new BadRequestException("City not found")));
         post = postRepository.save(post);
         return modelMapper.map(post,PostResponseDTO.class);
     }
-    @Transactional
     public PostResponseDTO acceptOffer(int postId, int offerId) {
-        if (!postRepository.existsById(postId)){
-            throw new BadRequestException("Bad post id");
-        }
-        if (!offerRepository.existsById(offerId)){
-            throw new BadRequestException("Bad offer id");
-        }
-        Post post = postRepository.findById(postId);
-        if (offerRepository.findById(offerId).isEmpty()){
-            throw new BadRequestException("no such a offer");
-        }
-        Offer offer = offerRepository.findById(offerId).get();
+        Post post = postRepository.findById(postId).orElseThrow(()-> new BadRequestException("Post not found"));
+        Offer offer = offerRepository.findById(offerId).orElseThrow(()-> new BadRequestException("Offer not found"));
         if (offer.getPost() != post){
-            throw new BadRequestException("This offer is not for this post");
+            throw new BadRequestException("This offer doesn't belong to this post");
         }
         post.setAcceptedOffer(offer);
         post.setAssignedDate(LocalDateTime.now());
         post = postRepository.save(post);
-        offer.setAcceptedBy(post);
-        offer = offerRepository.save(offer);
-        // post.getOffers().remove(offer); ?
         return modelMapper.map(post,PostResponseDTO.class);
     }
 }
