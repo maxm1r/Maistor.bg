@@ -25,5 +25,4 @@ public class OfferDTO {
     private LocalDateTime offer_date;
     private int hoursNeeded;
     private int daysNeeded;
-
 }

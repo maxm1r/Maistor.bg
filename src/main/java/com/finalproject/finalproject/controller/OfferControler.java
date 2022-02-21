@@ -2,6 +2,7 @@ package com.finalproject.finalproject.controller;
 
 import com.finalproject.finalproject.model.dto.OfferCreateDTO;
 import com.finalproject.finalproject.model.dto.OfferDTO;
+import com.finalproject.finalproject.model.dto.OfferEditDTO;
 import com.finalproject.finalproject.service.OfferService;
 import com.finalproject.finalproject.utility.UserUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,13 @@ public class OfferControler {
     OfferService offerService;
 
     @PostMapping("offer/{id}")
-    public ResponseEntity<OfferDTO> createOffer(@PathVariable int id, HttpSession session, HttpServletRequest request, @RequestBody OfferCreateDTO offer){
+    public ResponseEntity<OfferDTO> createOffer(HttpSession session, HttpServletRequest request, @RequestBody OfferCreateDTO offer){
         UserUtility.validateLogin(session,request);
-        return ResponseEntity.ok(offerService.createOffer(offer,id));
+        return ResponseEntity.ok(offerService.createOffer(offer, (Integer) session.getAttribute(UserController.USER_ID)));
+    }
+    @PostMapping("offer/{id}")
+    public ResponseEntity<OfferDTO> editOffer(HttpSession session, HttpServletRequest request, @RequestBody OfferEditDTO offerEditDTO){
+        UserUtility.validateLogin(session,request);
+        return ResponseEntity.ok(offerService.editOffer(offerEditDTO,(Integer) session.getAttribute(UserController.USER_ID)));
     }
 }

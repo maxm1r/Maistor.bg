@@ -155,7 +155,7 @@ public class UserService {
     public UserWithRating getUserRatebyId(int id) {
         if (userRepository.findById(id).isEmpty()){
             throw new BadRequestException("Bad user id");
-        }
+        }  
         User user = userRepository.findById(id).get();
         UserWithRating userWithRating = modelMapper.map(user,UserWithRating.class);
         double rate = rateRepository.getAverageRatingForUser(id);

@@ -14,7 +14,6 @@ import java.util.Set;
 public interface UserRepository extends JpaRepository<User,Integer> {
 
     User findByEmail(String email);
-    User getById(int id);
     Set<User> getAllByCategoriesContaining(Category category);
     @Query(value = "SELECT * FROM user WHERE is_workman = true",nativeQuery = true)
     Collection<User> findAllWorkmans();
