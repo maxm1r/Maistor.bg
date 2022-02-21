@@ -19,12 +19,12 @@ import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -37,19 +37,21 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
     @Autowired
-    ModelMapper modelMapper;
+    private ModelMapper modelMapper;
     @Autowired
-    RateRepository rateRepository;
+    private RateRepository rateRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     public UserRegisterResponseDTO register(UserRegisterRequestDTO registerDTO) {
 
         if (!UserUtility.passMatch(registerDTO)){
-            throw new BadRequestException("Passwords dont match");
+            throw new BadRequestException("Passwords don't match");
         }
         if (!UserUtility.isEmailValid(registerDTO)){
             throw new BadRequestException("Invalid email");
@@ -58,19 +60,20 @@ public class UserService {
             throw  new BadRequestException("Email already exist");
         }
         if(registerDTO.getFirstName().isEmpty()){
-            throw new BadRequestException("Enter you first name!");
+            throw new BadRequestException("Enter your first name!");
         }
         if(registerDTO.getLastName().isEmpty()){
-            throw new BadRequestException("Enter you last name!");
+            throw new BadRequestException("Enter your last name!");
         }
         if(registerDTO.getPhoneNumber().isEmpty()){
-            throw new BadRequestException("Enter you phone number!");
+            throw new BadRequestException("Enter your phone number!");
         }
         if (userRepository.findUserByPhoneNumber(registerDTO.getPhoneNumber()) != null){
             throw new BadRequestException("The phone is already registered!");
         }
         // TODO real email verification , real password verification, phone verification
         User user = modelMapper.map(registerDTO,User.class);
+        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         user = userRepository.save(user);
         return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
@@ -84,6 +87,9 @@ public class UserService {
         }
         User u = userRepository.findByEmail(email);
         if(u == null){
+            throw new UnauthorizedException("Wrong credentials");
+        }
+        if(!passwordEncoder.matches(password, u.getPassword())){
             throw new UnauthorizedException("Wrong credentials");
         }
         return u;
