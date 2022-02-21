@@ -4,13 +4,19 @@ import com.finalproject.finalproject.model.dto.*;
 import com.finalproject.finalproject.model.dto.userDTOS.*;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.service.UserService;
+import lombok.SneakyThrows;
+import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Set;
 
 @RestController
@@ -85,6 +91,15 @@ public class UserController extends CustomExceptionHandler {
         session.invalidate();
     }
 
+    @SneakyThrows
+    @PostMapping("/users/image")
+    public String uploadProfileImage(@RequestParam(name = "file")MultipartFile file){
+        String name = String.valueOf(System.nanoTime());
+        String ext = FilenameUtils.getExtension(file.getOriginalFilename());
+        File holder = new File("uploads" + File.separator + name + "." + ext);
+        Files.copy(file.getInputStream(), Path.of(holder.toURI()));
+        return holder.getName();
+    }
 
 
 }
