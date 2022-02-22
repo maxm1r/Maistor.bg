@@ -1,6 +1,7 @@
 package com.finalproject.finalproject.controller;
 
 import com.finalproject.finalproject.model.dto.postDTOS.PostDTO;
+import com.finalproject.finalproject.model.dto.postDTOS.PostFilterDTO;
 import com.finalproject.finalproject.model.dto.postDTOS.PostResponseDTO;
 import com.finalproject.finalproject.model.pojo.Post;
 import com.finalproject.finalproject.service.PostService;
@@ -26,12 +27,12 @@ public class PostController extends CustomExceptionHandler {
     @PostMapping("/post")
     public ResponseEntity<PostResponseDTO> createPost(HttpServletRequest request, @RequestBody PostDTO postDTO){
         sessionManager.verifyUser(request);
-        return ResponseEntity.ok(postService.createPost((Integer) request.getSession().getAttribute(UserController.USER_ID),postDTO));
+        return ResponseEntity.ok(postService.createPost((Integer) request.getSession().getAttribute(SessionManager.USER_ID),postDTO));
     }
     @DeleteMapping("/post")
     public ResponseEntity<PostResponseDTO> deletePost(@RequestParam(name = "id") int id, HttpServletRequest request){
         sessionManager.verifyUser(request);
-        return ResponseEntity.ok(postService.deletePost(id, (Integer) request.getSession().getAttribute(UserController.USER_ID)));
+        return ResponseEntity.ok(postService.deletePost(id, (Integer) request.getSession().getAttribute(SessionManager.USER_ID)));
     }
     @GetMapping("/post/all")
     public ResponseEntity<Set<PostResponseDTO>> getAllPosts(){
@@ -48,4 +49,8 @@ public class PostController extends CustomExceptionHandler {
         sessionManager.verifyUser(request);
         return ResponseEntity.ok(postService.acceptOffer(postId,offerId));
     }
+//    @GetMapping("post/filter")
+//    public ResponseEntity<List<PostResponseDTO>> getPostsByFilter(@RequestBody PostFilterDTO postFilterDTO, HttpServletRequest request){
+//        return ResponseEntity.ok(postService.getPostsByFilter(postFilterDTO));
+//    }
 }

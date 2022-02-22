@@ -2,24 +2,20 @@ package com.finalproject.finalproject.controller;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
-import com.finalproject.finalproject.model.dto.userDTOS.UserWithCommentDTO;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.ModelMap;
 
-import javax.naming.AuthenticationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import static com.finalproject.finalproject.controller.UserController.LOGGED;
-import static com.finalproject.finalproject.controller.UserController.LOGGED_FROM;
-
 @Component
 public class SessionManager {
-    private static final String USER_ID = "USER_ID";
+    public static final String LOGGED = "logged";
+    public static final String USER_ID = "user_id";
+    public static final String LOGGED_FROM = "logged_from";
     private static final int ADMIN_ID = 2;
     @Autowired
     private UserRepository userRepository;

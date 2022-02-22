@@ -38,7 +38,7 @@ public class CommentController {
     @PostMapping("/{id}/comments")
     public CommentWithoutUserPasswordDTO add(@RequestBody CommentResponseDTO comment, HttpServletRequest request, @PathVariable int id){
         sessionManager.verifyUser(request);
-        return commentService.addComment(comment, (Integer)request.getSession().getAttribute(UserController.USER_ID), id);
+        return commentService.addComment(comment, (Integer)request.getSession().getAttribute(SessionManager.USER_ID), id);
     }
 
     @GetMapping("/comments/{id}")
@@ -59,7 +59,7 @@ public class CommentController {
         Comment comment = new Comment();
 
         comment.setId(id);
-        if((Integer) request.getSession().getAttribute(UserController.USER_ID) != commentId){
+        if((Integer) request.getSession().getAttribute(SessionManager.USER_ID) != commentId){
             throw new ForbiddenException("You are not the owner of this comment!");
         }
 
@@ -72,11 +72,11 @@ public class CommentController {
     public ResponseEntity<CommentResponseDTO> edit(@RequestBody CommentResponseDTO comment, @PathVariable int id, HttpServletRequest request){
         sessionManager.verifyUser(request);
         Comment c = commentService.getCommentById(comment.getId());
-        if((Integer) request.getSession().getAttribute(UserController.USER_ID) != c.getOwnerId().getId()){
+        if((Integer) request.getSession().getAttribute(SessionManager.USER_ID) != c.getOwnerId().getId()){
             throw new ForbiddenException("You are not the owner of this comment!");
         }
 
-        Integer userId = (Integer) request.getSession().getAttribute(UserController.USER_ID);
+        Integer userId = (Integer) request.getSession().getAttribute(SessionManager.USER_ID);
         Optional<User> u = userRepository.findById(userId);
         c.setId(comment.getId());
         c.setOwnerId(u.orElseThrow(()-> new NotFoundException("User not found!")));

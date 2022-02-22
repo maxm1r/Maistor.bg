@@ -22,9 +22,7 @@ public class UserController extends CustomExceptionHandler {
     UserService userService;
     @Autowired
     ModelMapper modelMapper;
-    public static final String LOGGED = "logged";
-    public static final String USER_ID = "user_id";
-    public static final String LOGGED_FROM = "logged_from";
+
     @Autowired
     SessionManager sessionManager;
 
@@ -45,13 +43,13 @@ public class UserController extends CustomExceptionHandler {
     @PostMapping("/user/category")
     public ResponseEntity<UserWithoutPasswordDTO> addCategory(@RequestBody CategoryNameDTO categoryName, HttpServletRequest request){
         sessionManager.verifyUser(request);
-        return ResponseEntity.ok(userService.addCategory((Integer) request.getSession().getAttribute(USER_ID),  categoryName.getCategoryName()));
+        return ResponseEntity.ok(userService.addCategory((Integer) request.getSession().getAttribute(SessionManager.USER_ID),  categoryName.getCategoryName()));
     }
 
     @DeleteMapping("/user/category")
     public ResponseEntity<UserWithoutPasswordDTO> removeCategory(@RequestBody CategoryNameDTO categoryName, HttpServletRequest request){
         sessionManager.verifyUser(request);
-        return ResponseEntity.ok(userService.removeCategory((Integer) request.getSession().getAttribute(USER_ID),categoryName.getCategoryName()));
+        return ResponseEntity.ok(userService.removeCategory((Integer) request.getSession().getAttribute(SessionManager.USER_ID),categoryName.getCategoryName()));
     }
 
     @GetMapping("/user/category/{categoryName}")
@@ -82,7 +80,7 @@ public class UserController extends CustomExceptionHandler {
     @PutMapping("/user")
     public ResponseEntity<EditUserDTO> editUser(@RequestBody EditUserDTO dto,HttpServletRequest request){
         sessionManager.verifyUser(request);
-        return ResponseEntity.ok(userService.edinUser(dto, (Integer) request.getSession().getAttribute(USER_ID)));
+        return ResponseEntity.ok(userService.edinUser(dto, (Integer) request.getSession().getAttribute(SessionManager.USER_ID)));
     }
 
     @PostMapping("/logout")

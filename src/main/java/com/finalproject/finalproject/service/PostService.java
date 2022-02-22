@@ -2,6 +2,7 @@ package com.finalproject.finalproject.service;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.model.dto.postDTOS.PostDTO;
+import com.finalproject.finalproject.model.dto.postDTOS.PostFilterDTO;
 import com.finalproject.finalproject.model.dto.postDTOS.PostResponseDTO;
 import com.finalproject.finalproject.model.pojo.*;
 import com.finalproject.finalproject.model.repositories.*;
@@ -83,4 +84,30 @@ public class PostService {
         post = postRepository.save(post);
         return modelMapper.map(post,PostResponseDTO.class);
     }
+
+//    public Object getPostsByFilter(PostFilterDTO postFilterDTO) {
+//        StringBuilder sql = new StringBuilder("SELECT * FROM post WHERE");
+//        boolean firstTime = true;
+//        if (postFilterDTO.getAssignedDateAfter() != null && postFilterDTO.getPostedDateAfter().isBefore(LocalDateTime.now().minusYears(1))) {
+//            if (firstTime==true){
+//                sql.append("WHERE(posted_date >"+java.sql.Date.valueOf(postFilterDTO.getPostedDateAfter().toLocalDate()) + ") ");
+//                firstTime=false;
+//            }
+//            else {
+//                sql.append("AND (posted_date >"+java.sql.Date.valueOf(postFilterDTO.getPostedDateAfter().toLocalDate()+ ") " ));
+//            }
+//        }
+//
+//        if (postFilterDTO.getAssignedDateAfter() != null && postFilterDTO.getPostedDateAfter().isBefore(LocalDateTime.now().minusYears(1))) {
+//            if (firstTime==true){
+//                sql.append("WHERE(posted_date >"+java.sql.Date.valueOf(postFilterDTO.getPostedDateAfter().toLocalDate()) + ") ");
+//                firstTime=false;
+//            }
+//            else {
+//                sql.append("AND (posted_date >"+java.sql.Date.valueOf(postFilterDTO.getPostedDateAfter().toLocalDate()+ ") " ));
+//            }
+//        }
+//    }
+
 }
+

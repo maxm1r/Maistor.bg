@@ -1,5 +1,6 @@
 package com.finalproject.finalproject.service;
 
+import com.finalproject.finalproject.controller.SessionManager;
 import com.finalproject.finalproject.controller.UserController;
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.NotFoundException;
@@ -57,21 +58,23 @@ public class UserService {
             throw new BadRequestException("Invalid email");
         }
         if (userRepository.findByEmail(registerDTO.getEmail()) != null){
-            throw  new BadRequestException("Email already exist");
+            throw  new BadRequestException("User already exist");
         }
-        if(registerDTO.getFirstName().isEmpty()){
-            throw new BadRequestException("Enter your first name!");
+        if(registerDTO.getFirstName().isEmpty() || registerDTO.getFirstName().isBlank()){
+            throw new BadRequestException("Bad first name");
         }
-        if(registerDTO.getLastName().isEmpty()){
-            throw new BadRequestException("Enter your last name!");
+        if(registerDTO.getLastName().isEmpty() || registerDTO.getLastName().isBlank()){
+            throw new BadRequestException("Bad last name");
         }
-        if(registerDTO.getPhoneNumber().isEmpty()){
-            throw new BadRequestException("Enter your phone number!");
+        if(registerDTO.getPhoneNumber().isEmpty() || registerDTO.getPhoneNumber().length() > 14){
+            throw new BadRequestException("Bad phone number");
         }
         if (userRepository.findUserByPhoneNumber(registerDTO.getPhoneNumber()) != null){
             throw new BadRequestException("The phone is already registered!");
         }
-        // TODO real email verification , real password verification, phone verification
+        if (!UserUtility.validPass(registerDTO)){
+            throw new BadRequestException("Pass doesn't match the requirements");
+        }
         User user = modelMapper.map(registerDTO,User.class);
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         user = userRepository.save(user);
@@ -171,8 +174,7 @@ public class UserService {
 
     @SneakyThrows
     public String uploadFile(MultipartFile file , HttpServletRequest request){
-        UserUtility.validateLogin(request.getSession(),request);
-        int loggedUserId = (int) request.getSession().getAttribute(UserController.USER_ID);
+        int loggedUserId = (int) request.getSession().getAttribute(SessionManager.USER_ID);
         String name = String.valueOf(System.nanoTime());
         String ext = FilenameUtils.getExtension(file.getOriginalFilename());
         File holder = new File("uploads" + File.separator + name + "." + ext);
