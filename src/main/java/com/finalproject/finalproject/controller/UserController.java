@@ -25,6 +25,8 @@ public class UserController extends CustomExceptionHandler {
     public static final String LOGGED = "logged";
     public static final String USER_ID = "user_id";
     public static final String LOGGED_FROM = "logged_from";
+    @Autowired
+    SessionManager sessionManager;
 
     @PostMapping("/user")
     public ResponseEntity<UserRegisterResponseDTO> register(@RequestBody UserRegisterRequestDTO registerDTO){
@@ -35,22 +37,20 @@ public class UserController extends CustomExceptionHandler {
         String email = user.getEmail();
         String password = user.getPassword();
         User u = userService.login(email, password);
-        session.setAttribute(LOGGED, true);
-        session.setAttribute("logged_from",request.getRemoteAddr());
-        session.setAttribute(USER_ID, u.getId());
+        sessionManager.loginUser(session,u.getId(),request);
         UserWithCommentDTO dto = modelMapper.map(u, UserWithCommentDTO.class);
         return dto;
     }
 
     @PostMapping("/user/category")
     public ResponseEntity<UserWithoutPasswordDTO> addCategory(@RequestBody CategoryNameDTO categoryName, HttpServletRequest request){
-        UserUtility.validateLogin(request.getSession(),request);
+        sessionManager.verifyUser(request);
         return ResponseEntity.ok(userService.addCategory((Integer) request.getSession().getAttribute(USER_ID),  categoryName.getCategoryName()));
     }
 
     @DeleteMapping("/user/category")
     public ResponseEntity<UserWithoutPasswordDTO> removeCategory(@RequestBody CategoryNameDTO categoryName, HttpServletRequest request){
-        UserUtility.validateLogin(request.getSession(),request);
+        sessionManager.verifyUser(request);
         return ResponseEntity.ok(userService.removeCategory((Integer) request.getSession().getAttribute(USER_ID),categoryName.getCategoryName()));
     }
 
@@ -81,17 +81,18 @@ public class UserController extends CustomExceptionHandler {
 
     @PutMapping("/user")
     public ResponseEntity<EditUserDTO> editUser(@RequestBody EditUserDTO dto,HttpServletRequest request){
-        UserUtility.validateLogin(request.getSession(), request);
+        sessionManager.verifyUser(request);
         return ResponseEntity.ok(userService.edinUser(dto, (Integer) request.getSession().getAttribute(USER_ID)));
     }
 
     @PostMapping("/logout")
     public void logOut(HttpSession session){
-        session.invalidate();
+        sessionManager.logoutUser(session);
     }
 
     @PostMapping("/users/image")
     public String uploadProfileImage(@RequestParam(name = "file")MultipartFile file, HttpServletRequest request){
+        sessionManager.verifyUser(request);
         return  userService.uploadFile(file,request);
     }
 

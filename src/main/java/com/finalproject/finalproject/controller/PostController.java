@@ -20,15 +20,17 @@ public class PostController extends CustomExceptionHandler {
 
     @Autowired
     PostService postService;
+    @Autowired
+    SessionManager sessionManager;
 
     @PostMapping("/post")
     public ResponseEntity<PostResponseDTO> createPost(HttpServletRequest request, @RequestBody PostDTO postDTO){
-        UserUtility.validateLogin(request.getSession(),request);
+        sessionManager.verifyUser(request);
         return ResponseEntity.ok(postService.createPost((Integer) request.getSession().getAttribute(UserController.USER_ID),postDTO));
     }
     @DeleteMapping("/post")
     public ResponseEntity<PostResponseDTO> deletePost(@RequestParam(name = "id") int id, HttpServletRequest request){
-        UserUtility.validateLogin(request.getSession(),request);
+        sessionManager.verifyUser(request);
         return ResponseEntity.ok(postService.deletePost(id, (Integer) request.getSession().getAttribute(UserController.USER_ID)));
     }
     @GetMapping("/post/all")
@@ -37,11 +39,13 @@ public class PostController extends CustomExceptionHandler {
     }
 
     @PutMapping("/post/{id}")
-    public ResponseEntity<PostResponseDTO> editPost(@RequestBody PostDTO postDTO,@PathVariable int id ){
+    public ResponseEntity<PostResponseDTO> editPost(@RequestBody PostDTO postDTO,@PathVariable int id,HttpServletRequest request ){
+        sessionManager.verifyUser(request);
         return ResponseEntity.ok(postService.editPost(postDTO,id));
     }
     @PostMapping("/post/offer")
-    public ResponseEntity<PostResponseDTO> acceptOffer(@RequestParam(name = "postId") int postId, @RequestParam(name = "offerId") int offerId){
+    public ResponseEntity<PostResponseDTO> acceptOffer(@RequestParam(name = "postId") int postId, @RequestParam(name = "offerId") int offerId, HttpServletRequest request){
+        sessionManager.verifyUser(request);
         return ResponseEntity.ok(postService.acceptOffer(postId,offerId));
     }
 }

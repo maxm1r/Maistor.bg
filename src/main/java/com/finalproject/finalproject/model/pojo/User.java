@@ -37,6 +37,9 @@ public class User {
     @OneToMany
     @JoinColumn(name = "owner_id")
     private Set<Post> posts = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name="role_id")
+    private Role role;
 
 
 

@@ -30,19 +30,19 @@ public class CommentController {
     private CommentService commentService;
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    SessionManager sessionManager;
     @Autowired
     private ModelMapper mapper;
 
     @PostMapping("/{id}/comments")
     public CommentWithoutUserPasswordDTO add(@RequestBody CommentResponseDTO comment, HttpServletRequest request, @PathVariable int id){
-        UserUtility.validateLogin(request.getSession(), request);
+        sessionManager.verifyUser(request);
         return commentService.addComment(comment, (Integer)request.getSession().getAttribute(UserController.USER_ID), id);
     }
 
     @GetMapping("/comments/{id}")
         public CommentWithOwnerDTO getById(@PathVariable int id,HttpServletRequest request){
-            UserUtility.validateLogin(request.getSession(),request);
             Comment comment = commentService.getCommentById(id);
             CommentWithOwnerDTO dto = new CommentWithOwnerDTO();
             dto.setId(comment.getId());
@@ -54,7 +54,7 @@ public class CommentController {
 
     @DeleteMapping("/comments/{id}")
         public CommentWithoutUserPasswordDTO delete(@PathVariable int id,HttpServletRequest request){
-        UserUtility.validateLogin(request.getSession(),request);
+        sessionManager.verifyUser(request);
         int commentId= commentService.getCommentById(id).getOwnerId().getId();
         Comment comment = new Comment();
 
@@ -70,7 +70,7 @@ public class CommentController {
 
     @PutMapping("/{id}/comments")
     public ResponseEntity<CommentResponseDTO> edit(@RequestBody CommentResponseDTO comment, @PathVariable int id, HttpServletRequest request){
-        UserUtility.validateLogin(request.getSession(),request);
+        sessionManager.verifyUser(request);
         Comment c = commentService.getCommentById(comment.getId());
         if((Integer) request.getSession().getAttribute(UserController.USER_ID) != c.getOwnerId().getId()){
             throw new ForbiddenException("You are not the owner of this comment!");

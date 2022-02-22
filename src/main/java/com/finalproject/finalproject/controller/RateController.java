@@ -15,22 +15,24 @@ import javax.servlet.http.HttpSession;
 public class RateController {
     @Autowired
     RateService rateService;
+    @Autowired
+    SessionManager sessionManager;
 
     @PostMapping("/rate")
     public ResponseEntity<RateResponseDTO> rate(@RequestParam(name = "ratedId") int ratedId,  @RequestBody RateDTO rating, HttpServletRequest request){
-        UserUtility.validateLogin(request.getSession(),request);
+        sessionManager.verifyUser(request);
         return ResponseEntity.ok(rateService.createRate((Integer) request.getSession().getAttribute(UserController.USER_ID),  ratedId,rating));
     }
 
     @PutMapping("/rate/{ratedId}")
     public ResponseEntity<RateResponseDTO> editRate(@PathVariable int ratedId, @RequestBody RateDTO rating, HttpServletRequest request){
-        UserUtility.validateLogin(request.getSession(),request);
+        sessionManager.verifyUser(request);
         return ResponseEntity.ok(rateService.editRate((Integer) request.getSession().getAttribute(UserController.USER_ID),  ratedId,rating));
     }
 
     @DeleteMapping("/rate/{ratedId}")
     public ResponseEntity<RateResponseDTO> unrate(@PathVariable int ratedId, HttpServletRequest request){
-        UserUtility.validateLogin(request.getSession(),request);
+        sessionManager.verifyUser(request);
         return ResponseEntity.ok(rateService.unrate((Integer) request.getSession().getAttribute(UserController.USER_ID),ratedId));
     }
 }
