@@ -95,38 +95,31 @@ public class UserService {
         return u;
     }
 
-    @Transactional
     public UserWithoutPasswordDTO addCategory(int id, String categoryName) {
-        User user = userRepository.findById(id).orElse(null);
-        Category category = categoryRepository.getByCategoryName(categoryName);
-        if (user == null){
-            throw new BadRequestException("There is no user with that id");
-        }
+        User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        Category category = categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new BadRequestException("Category not found"));
         if (!user.isWorkman()){
-            throw new BadRequestException("Only workmans can have categories!");
-        }
-        if (category == null){
-            throw  new BadRequestException("There is no category with that name");
+            throw new BadRequestException("User isn't workman");
         }
         if (user.getCategories().contains(category)){
             throw new BadRequestException("User already have this category");
         }
-        // TODO some validations
         user.getCategories().add(category);
-        category.getUsers().add(user);
         user = userRepository.save(user);
+        category.getUsers().add(user);
         category = categoryRepository.save(category);
         return  modelMapper.map(user, UserWithoutPasswordDTO.class);
     }
 
-    @Transactional
     public UserWithoutPasswordDTO removeCategory(int id, String categoryName){
-        User user = userRepository.findById(id).orElse(null);
-        Category category = categoryRepository.getByCategoryName(categoryName);
-        // TODO some validiations
+        User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        Category category = categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new BadRequestException("Category not found"));
+        if (!user.getCategories().contains(category)){
+            throw new BadRequestException("User doesn't have this category");
+        }
         user.getCategories().remove(category);
-        category.getUsers().remove(user);
         user = userRepository.save(user);
+        category.getUsers().remove(user);
         category = categoryRepository.save(category);
         return modelMapper.map(user, UserWithoutPasswordDTO.class);
     }
@@ -140,9 +133,6 @@ public class UserService {
     }
 
     public EditUserDTO edinUser(EditUserDTO dto, int id) {
-        if (dto.getId() != id){
-            throw new BadRequestException("This user can't edit other users profiles");
-        }
         User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
         user = modelMapper.map(dto,User.class);
         user = userRepository.save(user);
@@ -160,7 +150,7 @@ public class UserService {
                 .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class)).collect(Collectors.toSet());
     }
 
-    public Set<UserWithoutPasswordDTO> getAllWorkmen() {
+    public Set<UserWithoutPasswordDTO> getAllWorkmans() {
         return userRepository.findAllWorkmans()
                 .stream()
                 .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class))
@@ -173,7 +163,7 @@ public class UserService {
         }  
         User user = userRepository.findById(id).get();
         UserWithRating userWithRating = modelMapper.map(user,UserWithRating.class);
-        double rate = rateRepository.getAverageRatingForUser(id);
+        double rate = rateRepository.getAverageRatingForUser(id).orElse(0.00);
         BigDecimal bd = new BigDecimal(rate).setScale(2, RoundingMode.HALF_UP);
         userWithRating.setRating(bd.doubleValue());
         return userWithRating;

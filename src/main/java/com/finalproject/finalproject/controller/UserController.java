@@ -48,7 +48,7 @@ public class UserController extends CustomExceptionHandler {
         return ResponseEntity.ok(userService.addCategory((Integer) request.getSession().getAttribute(USER_ID),  categoryName.getCategoryName()));
     }
 
-    @DeleteMapping("/user/category/{id}")
+    @DeleteMapping("/user/category")
     public ResponseEntity<UserWithoutPasswordDTO> removeCategory(@RequestBody CategoryNameDTO categoryName, HttpServletRequest request){
         UserUtility.validateLogin(request.getSession(),request);
         return ResponseEntity.ok(userService.removeCategory((Integer) request.getSession().getAttribute(USER_ID),categoryName.getCategoryName()));
@@ -69,9 +69,9 @@ public class UserController extends CustomExceptionHandler {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("user/allWorkMen")
+    @GetMapping("user/all/workmans")
     public ResponseEntity<Set<UserWithoutPasswordDTO>> getAllWorkmen(){
-        return ResponseEntity.ok(userService.getAllWorkmen());
+        return ResponseEntity.ok(userService.getAllWorkmans());
     }
 
     @GetMapping("/user/rate/{id}")

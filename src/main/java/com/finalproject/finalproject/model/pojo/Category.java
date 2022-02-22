@@ -22,12 +22,7 @@ public class Category {
     private int id;
     private String categoryName;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-    @JoinTable(
-            name="workman_qualification" ,
-            joinColumns = { @JoinColumn(name ="workman_id") },
-            inverseJoinColumns = { @JoinColumn(name = "category_id") }
-    )
+    @ManyToMany(mappedBy = "categories")
     private Set<User> users = new HashSet<>();
 
 }

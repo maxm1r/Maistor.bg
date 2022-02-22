@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     User findByEmail(String email);
     Set<User> getAllByCategoriesContaining(Category category);
     @Query(value = "SELECT * FROM user WHERE is_workman = true",nativeQuery = true)
-    Collection<User> findAllWorkmans();
+    Set<User> findAllWorkmans();
     User findUserByPhoneNumber(String phoneNumber);
 
 

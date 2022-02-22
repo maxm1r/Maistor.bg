@@ -33,7 +33,7 @@ public class CategoryService {
         category = categoryRepository.save(category);
         return modelMapper.map(category, CategoryDTO.class);
     }
-    @Transactional
+
     public CategoryDTO deleteFromDB(CategoryNameDTO categoryName) {
         if (!categoryRepository.existsByCategoryName(categoryName.getCategoryName())){
             throw new BadRequestException("No category with that name");

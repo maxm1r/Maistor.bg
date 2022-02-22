@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Component
 public class PostDTO {
-    private int id;
+
     private String categoryName;
     private String description;
     private String cityName;

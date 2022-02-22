@@ -27,7 +27,12 @@ public class User {
     private boolean isWorkman;
     private String profilePicture;
     private String phoneNumber;
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany
+    @JoinTable(
+            name = "workman_qualification",
+            joinColumns = @JoinColumn(name = "workman_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
     private Set<Category> categories = new HashSet<>();
     @OneToMany
     @JoinColumn(name = "owner_id")

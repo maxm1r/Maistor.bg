@@ -39,9 +39,6 @@ public class PostService {
         if ( postDTO.getDescription().isEmpty() ||  postDTO.getDescription().isBlank()){
             throw new BadRequestException("Bad description");
         }
-        if (!UserUtility.userHasCategory(user,postDTO.getCategoryName())) {
-            throw new BadRequestException("This user isn't qualified for that kind of work");
-        }
         Post post = new Post();
         post.setCategory(category);
         post.setOwner(user);

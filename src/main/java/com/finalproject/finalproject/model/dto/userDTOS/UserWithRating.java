@@ -1,5 +1,6 @@
 package com.finalproject.finalproject.model.dto.userDTOS;
 
+import com.finalproject.finalproject.model.dto.CategoryDTO;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.Post;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,6 @@ public class UserWithRating {
     private boolean isWorkman;
     private String profilePicture;
     private String phoneNumber;
-    private Set<Category> categories = new HashSet<>();
+    private Set<CategoryDTO> categories = new HashSet<>();
     private double rating;
 }

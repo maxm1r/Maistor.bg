@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditUserDTO {
-    private int id;
+
     private String firstName;
     private String lastName;
     private String email;

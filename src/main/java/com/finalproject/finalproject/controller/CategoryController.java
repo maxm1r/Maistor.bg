@@ -17,10 +17,8 @@ public class CategoryController extends CustomExceptionHandler {
 
     @PostMapping("/category/{categoryName}")
     public ResponseEntity<CategoryDTO> addCategoryToDB(@PathVariable("categoryName") CategoryNameDTO categoryName){
-
         return ResponseEntity.ok(categoryService.addToDB(categoryName));
     }
-
     @DeleteMapping("/category/{categoryName}")
     public ResponseEntity<CategoryDTO> deleteCategoryFromDB(@PathVariable("categoryName") CategoryNameDTO categoryName) {
           return ResponseEntity.ok(categoryService.deleteFromDB(categoryName));
@@ -29,5 +27,7 @@ public class CategoryController extends CustomExceptionHandler {
     public ResponseEntity<List<CategoryDTO>> getAll(){
         return ResponseEntity.ok(categoryService.getAll());
     }
+
+
 }
 

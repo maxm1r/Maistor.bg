@@ -1,6 +1,7 @@
 package com.finalproject.finalproject.service;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
+import com.finalproject.finalproject.exceptions.UnauthorizedException;
 import com.finalproject.finalproject.model.dto.OfferDTOS.OfferCreateDTO;
 import com.finalproject.finalproject.model.dto.OfferDTOS.OfferDTO;
 import com.finalproject.finalproject.model.dto.OfferEditDTO;
@@ -15,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class OfferService {
@@ -66,7 +70,7 @@ public class OfferService {
         Offer offer = offerRepository.findById(offerEditDTO.getId()).orElseThrow(()-> new BadRequestException("Offer not found"));
         User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
         if (offer.getUser() != user){
-            throw new BadRequestException("User isn't offer owner");
+            throw new UnauthorizedException("User isn't offer owner");
         }
         offer = offerRepository.save(offer);
         return modelMapper.map(offer,OfferDTO.class);
@@ -76,9 +80,14 @@ public class OfferService {
         Offer offer = offerRepository.findById(offerId).orElseThrow(()->new BadRequestException("Offer not found"));
         User user = userRepository.findById(userId).orElseThrow(()-> new BadRequestException("User not found"));
         if (offer.getUser() != user){
-            throw new BadRequestException("User is not post owner");
+            throw new UnauthorizedException("User is not post owner");
         }
         offerRepository.deleteById(offerId);
         return modelMapper.map(offer,OfferDTO.class);
+    }
+
+    public List<OfferDTO> getAllOffersForUser(int id) {
+        User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        return offerRepository.findAllByUser(user).stream().map(offer -> modelMapper.map(offer,OfferDTO.class)).collect(Collectors.toList());
     }
 }

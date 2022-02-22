@@ -16,7 +16,7 @@ public class RateController {
     @Autowired
     RateService rateService;
 
-    @PostMapping("/rate/{ratedId}")
+    @PostMapping("/rate")
     public ResponseEntity<RateResponseDTO> rate(@RequestParam(name = "ratedId") int ratedId,  @RequestBody RateDTO rating, HttpServletRequest request){
         UserUtility.validateLogin(request.getSession(),request);
         return ResponseEntity.ok(rateService.createRate((Integer) request.getSession().getAttribute(UserController.USER_ID),  ratedId,rating));
