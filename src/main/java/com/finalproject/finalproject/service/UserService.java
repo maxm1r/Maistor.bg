@@ -14,6 +14,7 @@ import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.CategoryRepository;
 import com.finalproject.finalproject.model.repositories.RateRepository;
+import com.finalproject.finalproject.model.repositories.RolesRepository;
 import com.finalproject.finalproject.model.repositories.UserRepository;
 import com.finalproject.finalproject.utility.UserUtility;
 import lombok.SneakyThrows;
@@ -47,6 +48,8 @@ public class UserService {
     private RateRepository rateRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RolesRepository roleRepository;
 
 
     public UserRegisterResponseDTO register(UserRegisterRequestDTO registerDTO) {
@@ -77,6 +80,7 @@ public class UserService {
         }
         User user = modelMapper.map(registerDTO,User.class);
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        user.setRole(roleRepository.getById(SessionManager.USER_ROLE_ID));
         user = userRepository.save(user);
         return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
