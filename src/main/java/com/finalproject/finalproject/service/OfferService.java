@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -89,5 +88,10 @@ public class OfferService {
     public List<OfferDTO> getAllOffersForUser(int id) {
         User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
         return offerRepository.findAllByUser(user).stream().map(offer -> modelMapper.map(offer,OfferDTO.class)).collect(Collectors.toList());
+    }
+
+    public List<OfferDTO> findAllByPost(int id){
+        Post post = postRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        return offerRepository.findAllByPost(post).stream().map(offer -> modelMapper.map(offer,OfferDTO.class)).collect(Collectors.toList());
     }
 }

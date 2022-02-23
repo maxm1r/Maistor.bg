@@ -1,5 +1,5 @@
 ### create post
-POST localhost:8888/post/21
+POST localhost:8888/post/
 Content-Type: application/json
 
 {

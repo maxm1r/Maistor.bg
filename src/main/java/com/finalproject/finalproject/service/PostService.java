@@ -1,6 +1,7 @@
 package com.finalproject.finalproject.service;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
+import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.model.dto.postDTOS.PostDTO;
 import com.finalproject.finalproject.model.dto.postDTOS.PostFilterDTO;
 import com.finalproject.finalproject.model.dto.postDTOS.PostResponseDTO;
@@ -83,6 +84,11 @@ public class PostService {
         post.setAssignedDate(LocalDateTime.now());
         post = postRepository.save(post);
         return modelMapper.map(post,PostResponseDTO.class);
+    }
+
+    public List<Post> getAllPostForUser(int  id){
+        User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found!"));
+        return postRepository.findAllByOwner(user);
     }
 
 //    public Object getPostsByFilter(PostFilterDTO postFilterDTO) {

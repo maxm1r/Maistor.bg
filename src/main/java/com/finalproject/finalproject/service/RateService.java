@@ -30,7 +30,7 @@ public class RateService {
         User rater = userRepository.findById(raterId).orElseThrow(()->new BadRequestException("Rater not found"));
         User rated = userRepository.findById(ratedId).orElseThrow(()->new BadRequestException("Rated user not found"));
         if (!rated.isWorkman()){
-            throw new BadRequestException("Only workmans can be rated");
+            throw new BadRequestException("Only workmen can be rated");
         }
         Rates rate = new Rates();
         rate.setRating(rating.getRate());

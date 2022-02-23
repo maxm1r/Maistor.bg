@@ -73,7 +73,7 @@ public class UserService {
             throw new BadRequestException("The phone is already registered!");
         }
         if (!UserUtility.validPass(registerDTO)){
-            throw new BadRequestException("Pass doesn't match the requirements");
+            throw new BadRequestException("Password doesn't match the requirements");
         }
         User user = modelMapper.map(registerDTO,User.class);
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
@@ -102,7 +102,7 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
         Category category = categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new BadRequestException("Category not found"));
         if (!user.isWorkman()){
-            throw new BadRequestException("User isn't workman");
+            throw new BadRequestException("User isn't a workman");
         }
         if (user.getCategories().contains(category)){
             throw new BadRequestException("User already have this category");
@@ -143,7 +143,7 @@ public class UserService {
     }
 
     public UserWithoutPasswordDTO getUserByID(int id) {
-        User user = userRepository.findById(id).orElseThrow(()->new BadRequestException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(()->new NotFoundException("User not found"));
         return modelMapper.map(user,UserWithoutPasswordDTO.class);
     }
 
@@ -153,7 +153,7 @@ public class UserService {
                 .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class)).collect(Collectors.toSet());
     }
 
-    public Set<UserWithoutPasswordDTO> getAllWorkmans() {
+    public Set<UserWithoutPasswordDTO> getAllWorkmen() {
         return userRepository.findAllWorkmans()
                 .stream()
                 .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class))
@@ -162,7 +162,7 @@ public class UserService {
 
     public UserWithRating getUserRatebyId(int id) {
         if (userRepository.findById(id).isEmpty()){
-            throw new BadRequestException("User not found");
+            throw new NotFoundException("User not found");
         }  
         User user = userRepository.findById(id).get();
         UserWithRating userWithRating = modelMapper.map(user,UserWithRating.class);

@@ -4,7 +4,6 @@ import com.finalproject.finalproject.model.dto.*;
 import com.finalproject.finalproject.model.dto.userDTOS.*;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.service.UserService;
-import com.finalproject.finalproject.utility.UserUtility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -69,7 +68,7 @@ public class UserController extends CustomExceptionHandler {
 
     @GetMapping("user/all/workmans")
     public ResponseEntity<Set<UserWithoutPasswordDTO>> getAllWorkmen(){
-        return ResponseEntity.ok(userService.getAllWorkmans());
+        return ResponseEntity.ok(userService.getAllWorkmen());
     }
 
     @GetMapping("/user/rate/{id}")
