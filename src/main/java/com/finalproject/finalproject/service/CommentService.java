@@ -3,7 +3,7 @@ package com.finalproject.finalproject.service;
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
-import com.finalproject.finalproject.model.dto.commentDTOS.CommentResponseDTO;
+import com.finalproject.finalproject.model.dto.commentDTOS.CommentRequestDTO;
 import com.finalproject.finalproject.model.dto.commentDTOS.CommentWithoutUserPasswordDTO;
 import com.finalproject.finalproject.model.pojo.Comment;
 import com.finalproject.finalproject.model.pojo.User;
@@ -24,7 +24,7 @@ public class CommentService {
     @Autowired
     private UserRepository userRepository;
 
-    public CommentWithoutUserPasswordDTO addComment(CommentResponseDTO commentDTO, Integer userId, Integer workmanID){
+    public CommentWithoutUserPasswordDTO addComment(CommentRequestDTO commentDTO, Integer userId, Integer workmanID){
         if (userId ==null ){
             throw new UnauthorizedException("Please login");
         }
@@ -40,7 +40,9 @@ public class CommentService {
         comment.setPostedDate(LocalDateTime.now());
         comment.setOwnerId(getUserById(userId));
         comment.setWorkmanId(getUserById(workmanID));
-        comment.setParentComment(commentRepository.findById(commentDTO.getParentCommentId()).orElseThrow(()-> new BadRequestException("Invalid parent comment") ));
+        if (commentDTO.getParentCommentId() != null){
+            comment.setParentComment(commentRepository.findById(commentDTO.getParentCommentId().get()).orElseThrow(() -> new BadRequestException("Invalid parent comment")));
+        }
         commentRepository.save(comment);
         CommentWithoutUserPasswordDTO dto = new CommentWithoutUserPasswordDTO(comment);
         return dto;
