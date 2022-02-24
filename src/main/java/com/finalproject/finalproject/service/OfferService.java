@@ -72,6 +72,10 @@ public class OfferService {
         if (offer.getUser() != user){
             throw new UnauthorizedException("User isn't offer owner");
         }
+        offer.setDaysNeeded(offerEditDTO.getDaysNeeded());
+        offer.setHoursNeeded(offerEditDTO.getHoursNeeded());
+        offer.setPricePerHour(offerEditDTO.getPricePerHour());
+        System.out.println(offer.getPost().getDescription());
         offer = offerRepository.save(offer);
         return modelMapper.map(offer,OfferDTO.class);
     }
