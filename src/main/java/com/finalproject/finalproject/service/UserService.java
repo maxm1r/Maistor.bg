@@ -54,6 +54,21 @@ public class UserService {
 
     public UserRegisterResponseDTO register(UserRegisterRequestDTO registerDTO) {
 
+        if(registerDTO.getFirstName().isEmpty() || registerDTO.getFirstName().isBlank()){
+            throw new BadRequestException("Bad first name");
+        }
+        if(registerDTO.getLastName().isEmpty() || registerDTO.getLastName().isBlank()){
+            throw new BadRequestException("Bad last name");
+        }
+        if(registerDTO.getFirstName().length() > 20 ){
+            throw new BadRequestException("Too long first name!");
+        }
+        if(registerDTO.getLastName().length() > 20 ){
+            throw new BadRequestException("Too long last name!");
+        }
+        if(registerDTO.getPhoneNumber().isEmpty() || registerDTO.getPhoneNumber().length() > 14){
+            throw new BadRequestException("Bad phone number");
+        }
         if (!UserUtility.passMatch(registerDTO)){
             throw new BadRequestException("Passwords don't match");
         }
@@ -62,15 +77,6 @@ public class UserService {
         }
         if (userRepository.findByEmail(registerDTO.getEmail()) != null){
             throw  new BadRequestException("User already exist");
-        }
-        if(registerDTO.getFirstName().isEmpty() || registerDTO.getFirstName().isBlank()){
-            throw new BadRequestException("Bad first name");
-        }
-        if(registerDTO.getLastName().isEmpty() || registerDTO.getLastName().isBlank()){
-            throw new BadRequestException("Bad last name");
-        }
-        if(registerDTO.getPhoneNumber().isEmpty() || registerDTO.getPhoneNumber().length() > 14){
-            throw new BadRequestException("Bad phone number");
         }
         if (userRepository.findUserByPhoneNumber(registerDTO.getPhoneNumber()) != null){
             throw new BadRequestException("The phone is already registered!");
