@@ -1,6 +1,7 @@
 package com.finalproject.finalproject.service;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
+import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
 import com.finalproject.finalproject.model.dto.OfferDTOS.OfferCreateDTO;
 import com.finalproject.finalproject.model.dto.OfferDTOS.OfferDTO;
@@ -66,8 +67,8 @@ public class OfferService {
         if (offerEditDTO.getPricePerHour()<0){
             throw new BadRequestException("Invalid price per hour");
         }
-        Offer offer = offerRepository.findById(offerEditDTO.getId()).orElseThrow(()-> new BadRequestException("Offer not found"));
-        User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        Offer offer = offerRepository.findById(offerEditDTO.getId()).orElseThrow(()-> new NotFoundException("Offer not found"));
+        User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found"));
         if (offer.getUser() != user){
             throw new UnauthorizedException("User isn't offer owner");
         }
