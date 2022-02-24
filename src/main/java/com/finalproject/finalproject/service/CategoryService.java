@@ -8,6 +8,7 @@ import com.finalproject.finalproject.model.repositories.CategoryRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,12 +34,13 @@ public class CategoryService {
         return modelMapper.map(category, CategoryDTO.class);
     }
 
+    @Transactional
     public CategoryDTO deleteFromDB(CategoryNameDTO categoryName) {
         if (!categoryRepository.existsByCategoryName(categoryName.getCategoryName())){
             throw new BadRequestException("No category with that name");
         }
         Category category = categoryRepository.findByCategoryName(categoryName.getCategoryName()).orElseThrow(()-> new BadRequestException("Category not found"));
-        categoryRepository.deleteAllByCategoryName(categoryName.getCategoryName());
+        categoryRepository.deleteCategoryByCategoryName(categoryName.getCategoryName());
         return modelMapper.map(category,CategoryDTO.class);
     }
 
