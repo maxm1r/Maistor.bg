@@ -33,7 +33,7 @@ public class OfferService {
     OfferRepository offerRepository;
 
     public OfferDTO createOffer(OfferCreateDTO createOffer,int id){
-        if (createOffer.getDaysNeeded()<1 || createOffer.getDaysNeeded() >100){
+        if (createOffer.getDaysNeeded()<0 || createOffer.getDaysNeeded() >100){
             throw new BadRequestException("Invalid days needed");
         }
         if (createOffer.getHoursNeeded()<0 || createOffer.getHoursNeeded()>100){
@@ -72,6 +72,7 @@ public class OfferService {
         if (offer.getUser() != user){
             throw new UnauthorizedException("User isn't offer owner");
         }
+
         offer = offerRepository.save(offer);
         return modelMapper.map(offer,OfferDTO.class);
     }
