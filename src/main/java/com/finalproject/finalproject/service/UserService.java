@@ -147,7 +147,9 @@ public class UserService {
 
     public EditUserDTO edinUser(EditUserDTO dto, int id) {
         User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        String password = user.getPassword();
         user = modelMapper.map(dto,User.class);
+        user.setPassword(password);
         user = userRepository.save(user);
         return modelMapper.map(user,EditUserDTO.class);
     }
