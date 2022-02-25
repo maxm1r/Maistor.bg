@@ -3,12 +3,13 @@ package com.finalproject.finalproject.service;
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
-import com.finalproject.finalproject.model.dto.commentDTOS.CommentRequestDTO;
+import com.finalproject.finalproject.model.dto.commentDTOS.CommentDTO;
 import com.finalproject.finalproject.model.dto.commentDTOS.CommentWithoutUserPasswordDTO;
 import com.finalproject.finalproject.model.pojo.Comment;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.CommentRepository;
 import com.finalproject.finalproject.model.repositories.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class CommentService {
     @Autowired
     private UserRepository userRepository;
 
-    public CommentWithoutUserPasswordDTO addComment(CommentRequestDTO commentDTO, Integer userId, Integer workmanID){
+    public CommentWithoutUserPasswordDTO addComment(CommentDTO commentDTO, Integer userId, Integer workmanID){
         if (userId ==null ){
             throw new UnauthorizedException("Please login");
         }
@@ -73,6 +74,10 @@ public class CommentService {
         }
     }
 
+    public List<Comment> getAllByOwner(int id){
+        User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("Comment not found!"));
+        return commentRepository.findAllByOwnerId(user);
+    }
 
     public List<Comment> getAllByParentId(int id){
         Comment comment = commentRepository.findById(id).orElseThrow(()-> new NotFoundException("Comment not found!"));

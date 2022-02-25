@@ -63,7 +63,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionDTO dto = new ExceptionDTO();
         dto.setMsg(e.getMessage());
         dto.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        System.out.println(e.getClass().getName());
+        System.out.println(e.getClass().getSimpleName());
         e.printStackTrace();
         return dto;
     }

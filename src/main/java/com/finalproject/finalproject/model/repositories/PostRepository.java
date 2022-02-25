@@ -1,6 +1,5 @@
 package com.finalproject.finalproject.model.repositories;
 
-import com.finalproject.finalproject.model.pojo.Comment;
 import com.finalproject.finalproject.model.pojo.Post;
 import com.finalproject.finalproject.model.pojo.User;
 import org.springframework.data.jpa.repository.JpaRepository;

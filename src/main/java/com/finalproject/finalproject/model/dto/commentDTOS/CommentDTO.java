@@ -9,7 +9,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CommentRequestDTO {
+public class CommentDTO {
 
     private int id;
     private String text;
