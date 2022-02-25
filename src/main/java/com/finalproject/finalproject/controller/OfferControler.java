@@ -3,8 +3,12 @@ package com.finalproject.finalproject.controller;
 import com.finalproject.finalproject.model.dto.OfferDTOS.OfferCreateDTO;
 import com.finalproject.finalproject.model.dto.OfferDTOS.OfferDTO;
 import com.finalproject.finalproject.model.dto.OfferEditDTO;
+import com.finalproject.finalproject.model.dto.commentDTOS.ReplyDTO;
+import com.finalproject.finalproject.model.pojo.Comment;
+import com.finalproject.finalproject.model.pojo.Offer;
 import com.finalproject.finalproject.service.OfferService;
 import com.finalproject.finalproject.utility.UserUtility;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,4 +49,9 @@ public class OfferControler {
         return ResponseEntity.ok(offerService.getAllOffersForUser((Integer) request.getSession().getAttribute(SessionManager.USER_ID)));
     }
 
+    @GetMapping("{id}/offers")
+    public ResponseEntity<List<OfferDTO>> getAllOffersForPost(@PathVariable int id){
+        List<OfferDTO> offers = offerService.findAllByPost(id);
+        return ResponseEntity.ok(offers);
+    }
 }

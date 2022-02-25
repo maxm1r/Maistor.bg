@@ -1,10 +1,10 @@
 package com.finalproject.finalproject.controller;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
+import com.finalproject.finalproject.exceptions.ForbiddenException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.UserRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,11 +16,11 @@ public class SessionManager {
     public static final String LOGGED = "logged";
     public static final String USER_ID = "user_id";
     public static final String LOGGED_FROM = "logged_from";
-    private static final int ADMIN_ID = 2;
+    public static final int ADMIN_ROLE_ID = 2;
+    public static final int USER_ROLE_ID = 1;
+
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private ModelMapper modelMapper;
 
 
     public User getLoggedUser(HttpServletRequest request) {
@@ -47,8 +47,8 @@ public class SessionManager {
 
     }
     public void verifyAdmin(HttpServletRequest request){
-        if (getLoggedUser(request).getRole().getId() != ADMIN_ID){
-            throw new UnauthorizedException("Admin rights required!");
+        if (getLoggedUser(request).getRole().getId() != ADMIN_ROLE_ID){
+            throw new ForbiddenException("Admin rights required!");
         }
     }
     public void logoutUser(HttpSession session){

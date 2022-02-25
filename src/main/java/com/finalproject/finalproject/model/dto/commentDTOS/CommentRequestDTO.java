@@ -4,12 +4,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Optional;
+
 @Getter
 @Setter
 @NoArgsConstructor
-public class CommentResponseDTO {
+public class CommentRequestDTO {
 
     private int id;
     private String text;
-    private int parentCommentId;
+    private Optional<Integer> parentCommentId = null;
 }

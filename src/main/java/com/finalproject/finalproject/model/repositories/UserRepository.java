@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -18,6 +19,8 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     @Query(value = "SELECT * FROM user WHERE is_workman = true",nativeQuery = true)
     Set<User> findAllWorkmans();
     User findUserByPhoneNumber(String phoneNumber);
+    @Query(value = "SELECT * FROM user WHERE verification_code = :code",nativeQuery = true)
+    Optional<User> findByVerificationCode(String code);
 
 
 }

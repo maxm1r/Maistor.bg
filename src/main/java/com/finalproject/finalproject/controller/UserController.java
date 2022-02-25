@@ -4,7 +4,6 @@ import com.finalproject.finalproject.model.dto.*;
 import com.finalproject.finalproject.model.dto.userDTOS.*;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.service.UserService;
-import com.finalproject.finalproject.utility.UserUtility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +26,12 @@ public class UserController extends CustomExceptionHandler {
     SessionManager sessionManager;
 
     @PostMapping("/user")
-    public ResponseEntity<UserRegisterResponseDTO> register(@RequestBody UserRegisterRequestDTO registerDTO){
-        return ResponseEntity.ok(userService.register(registerDTO));
+    public ResponseEntity<UserRegisterResponseDTO> register(@RequestBody UserRegisterRequestDTO registerDTO,HttpServletRequest request){
+        return ResponseEntity.ok(userService.register(registerDTO,request));
+    }
+    @GetMapping("/verify")
+    public ResponseEntity<UserWithoutPasswordDTO> verify(@RequestParam("code") String code){
+        return ResponseEntity.ok(userService.verify(code));
     }
     @PostMapping("/login")
     public UserWithCommentDTO login(@RequestBody UserLoginRequestDTO user, HttpSession session, HttpServletRequest request){
@@ -69,7 +72,7 @@ public class UserController extends CustomExceptionHandler {
 
     @GetMapping("user/all/workmans")
     public ResponseEntity<Set<UserWithoutPasswordDTO>> getAllWorkmen(){
-        return ResponseEntity.ok(userService.getAllWorkmans());
+        return ResponseEntity.ok(userService.getAllWorkmen());
     }
 
     @GetMapping("/user/rate/{id}")

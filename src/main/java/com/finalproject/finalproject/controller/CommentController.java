@@ -2,7 +2,7 @@ package com.finalproject.finalproject.controller;
 
 import com.finalproject.finalproject.exceptions.ForbiddenException;
 import com.finalproject.finalproject.exceptions.NotFoundException;
-import com.finalproject.finalproject.model.dto.commentDTOS.CommentResponseDTO;
+import com.finalproject.finalproject.model.dto.commentDTOS.CommentRequestDTO;
 import com.finalproject.finalproject.model.dto.commentDTOS.CommentWithOwnerDTO;
 import com.finalproject.finalproject.model.dto.commentDTOS.CommentWithoutUserPasswordDTO;
 import com.finalproject.finalproject.model.dto.commentDTOS.ReplyDTO;
@@ -11,7 +11,6 @@ import com.finalproject.finalproject.model.pojo.Comment;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.UserRepository;
 import com.finalproject.finalproject.service.CommentService;
-import com.finalproject.finalproject.utility.UserUtility;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +35,14 @@ public class CommentController {
     private ModelMapper mapper;
 
     @PostMapping("/{id}/comments")
-    public CommentWithoutUserPasswordDTO add(@RequestBody CommentResponseDTO comment, HttpServletRequest request, @PathVariable int id){
+    public CommentWithoutUserPasswordDTO add(@RequestBody CommentRequestDTO comment, HttpServletRequest request, @PathVariable int id){
         sessionManager.verifyUser(request);
         return commentService.addComment(comment, (Integer)request.getSession().getAttribute(SessionManager.USER_ID), id);
     }
 
     @GetMapping("/comments/{id}")
         public CommentWithOwnerDTO getById(@PathVariable int id,HttpServletRequest request){
+            sessionManager.verifyUser(request);
             Comment comment = commentService.getCommentById(id);
             CommentWithOwnerDTO dto = new CommentWithOwnerDTO();
             dto.setId(comment.getId());
@@ -69,7 +69,7 @@ public class CommentController {
     }
 
     @PutMapping("/{id}/comments")
-    public ResponseEntity<CommentResponseDTO> edit(@RequestBody CommentResponseDTO comment, @PathVariable int id, HttpServletRequest request){
+    public ResponseEntity<CommentRequestDTO> edit(@RequestBody CommentRequestDTO comment, @PathVariable int id, HttpServletRequest request){
         sessionManager.verifyUser(request);
         Comment c = commentService.getCommentById(comment.getId());
         if((Integer) request.getSession().getAttribute(SessionManager.USER_ID) != c.getOwnerId().getId()){
@@ -85,7 +85,7 @@ public class CommentController {
         c.setText(comment.getText());
         commentService.edit(c);
 
-        CommentResponseDTO dto = mapper.map(c, CommentResponseDTO.class);
+        CommentRequestDTO dto = mapper.map(c, CommentRequestDTO.class);
         return ResponseEntity.ok(dto);
     }
 

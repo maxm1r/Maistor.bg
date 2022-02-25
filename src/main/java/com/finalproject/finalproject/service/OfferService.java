@@ -1,6 +1,7 @@
 package com.finalproject.finalproject.service;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
+import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
 import com.finalproject.finalproject.model.dto.OfferDTOS.OfferCreateDTO;
 import com.finalproject.finalproject.model.dto.OfferDTOS.OfferDTO;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,12 +67,16 @@ public class OfferService {
         if (offerEditDTO.getPricePerHour()<0){
             throw new BadRequestException("Invalid price per hour");
         }
-        Offer offer = offerRepository.findById(offerEditDTO.getId()).orElseThrow(()-> new BadRequestException("Offer not found"));
-        User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        Offer offer = offerRepository.findById(offerEditDTO.getId()).orElseThrow(()-> new NotFoundException("Offer not found"));
+        User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found"));
         if (offer.getUser() != user){
             throw new UnauthorizedException("User isn't offer owner");
         }
 
+        offer.setDaysNeeded(offerEditDTO.getDaysNeeded());
+        offer.setHoursNeeded(offerEditDTO.getHoursNeeded());
+        offer.setPricePerHour(offerEditDTO.getPricePerHour());
+        System.out.println(offer.getPost().getDescription());
         offer = offerRepository.save(offer);
         return modelMapper.map(offer,OfferDTO.class);
     }
@@ -90,5 +94,10 @@ public class OfferService {
     public List<OfferDTO> getAllOffersForUser(int id) {
         User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
         return offerRepository.findAllByUser(user).stream().map(offer -> modelMapper.map(offer,OfferDTO.class)).collect(Collectors.toList());
+    }
+
+    public List<OfferDTO> findAllByPost(int id){
+        Post post = postRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        return offerRepository.findAllByPost(post).stream().map(offer -> modelMapper.map(offer,OfferDTO.class)).collect(Collectors.toList());
     }
 }

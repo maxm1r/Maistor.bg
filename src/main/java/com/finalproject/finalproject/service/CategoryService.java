@@ -34,12 +34,13 @@ public class CategoryService {
         return modelMapper.map(category, CategoryDTO.class);
     }
 
+    @Transactional
     public CategoryDTO deleteFromDB(CategoryNameDTO categoryName) {
         if (!categoryRepository.existsByCategoryName(categoryName.getCategoryName())){
             throw new BadRequestException("No category with that name");
         }
         Category category = categoryRepository.findByCategoryName(categoryName.getCategoryName()).orElseThrow(()-> new BadRequestException("Category not found"));
-        categoryRepository.deleteAllByCategoryName(categoryName.getCategoryName());
+        categoryRepository.deleteCategoryByCategoryName(categoryName.getCategoryName());
         return modelMapper.map(category,CategoryDTO.class);
     }
 

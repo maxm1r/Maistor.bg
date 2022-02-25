@@ -17,7 +17,7 @@ POST localhost:8888/login
 Content-Type: application/json
 
 {
-  "email" : "marto2@abv.bg",
+  "email" : "marto5@abv.bg",
   "password" : "m1235"
 }
 
