@@ -13,6 +13,7 @@ import com.finalproject.finalproject.model.repositories.OfferRepository;
 import com.finalproject.finalproject.model.repositories.PostRepository;
 import com.finalproject.finalproject.model.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,7 +59,7 @@ public class OfferService {
         return modelMapper.map(offer,OfferDTO.class);
     }
     public OfferDTO editOffer(OfferEditDTO offerEditDTO, int id){
-        if (offerEditDTO.getDaysNeeded()<1 || offerEditDTO.getDaysNeeded() >100){
+        if (offerEditDTO.getDaysNeeded()<0 || offerEditDTO.getDaysNeeded() >100){
             throw new BadRequestException("Invalid days needed");
         }
         if (offerEditDTO.getHoursNeeded()<0 || offerEditDTO.getHoursNeeded()>100){
@@ -72,11 +73,9 @@ public class OfferService {
         if (offer.getUser() != user){
             throw new UnauthorizedException("User isn't offer owner");
         }
-
-        offer.setDaysNeeded(offerEditDTO.getDaysNeeded());
         offer.setHoursNeeded(offerEditDTO.getHoursNeeded());
         offer.setPricePerHour(offerEditDTO.getPricePerHour());
-        System.out.println(offer.getPost().getDescription());
+        offer.setDaysNeeded(offerEditDTO.getDaysNeeded());
         offer = offerRepository.save(offer);
         return modelMapper.map(offer,OfferDTO.class);
     }

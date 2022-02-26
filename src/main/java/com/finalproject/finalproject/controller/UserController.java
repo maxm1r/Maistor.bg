@@ -87,7 +87,7 @@ public class UserController extends CustomExceptionHandler {
     @PutMapping("/user")
     public ResponseEntity<EditUserDTO> editUser(@RequestBody EditUserDTO dto,HttpServletRequest request){
         sessionManager.verifyUser(request);
-        return ResponseEntity.ok(userService.edinUser(dto, (Integer) request.getSession().getAttribute(SessionManager.USER_ID)));
+        return ResponseEntity.ok(userService.editUser(dto, (Integer) request.getSession().getAttribute(SessionManager.USER_ID)));
     }
 
     @PostMapping("/logout")

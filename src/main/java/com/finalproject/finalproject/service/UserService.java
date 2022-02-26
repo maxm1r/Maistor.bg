@@ -18,6 +18,7 @@ import lombok.SneakyThrows;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -55,25 +56,16 @@ public class UserService {
     @SneakyThrows
     public UserRegisterResponseDTO register(UserRegisterRequestDTO registerDTO, HttpServletRequest request) {
 
-        if(registerDTO.getFirstName().isEmpty() || registerDTO.getFirstName().isBlank()){
+        if(!registerDTO.getFirstName().matches(UserUtility.nameRegex)){
             throw new BadRequestException("Bad first name");
         }
-        if(registerDTO.getLastName().isEmpty() || registerDTO.getLastName().isBlank()){
+        if(!registerDTO.getLastName().matches(UserUtility.nameRegex)){
             throw new BadRequestException("Bad last name");
-        }
-        if(registerDTO.getFirstName().length() > 20 ){
-            throw new BadRequestException("Too long first name!");
-        }
-        if(registerDTO.getLastName().length() > 20 ){
-            throw new BadRequestException("Too long last name!");
-        }
-        if(registerDTO.getPhoneNumber().isEmpty() || registerDTO.getPhoneNumber().length() > 14){
-            throw new BadRequestException("Bad phone number");
         }
         if (!UserUtility.passMatch(registerDTO)){
             throw new BadRequestException("Passwords don't match");
         }
-        if (!UserUtility.isEmailValid(registerDTO)){
+        if (!UserUtility.isEmailValid(registerDTO.getEmail())){
             throw new BadRequestException("Invalid email");
         }
         if (userRepository.findByEmail(registerDTO.getEmail()) != null){
@@ -87,18 +79,18 @@ public class UserService {
         }
         User user = modelMapper.map(registerDTO,User.class);
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        user.setPhoneNumber(UserUtility.validateAndConfigureNumber(user.getPhoneNumber()));
         user.setRole(roleRepository.getById(SessionManager.USER_ROLE_ID));
         user.setEnabled(false);
         String randomCode = RandomString.make(8);
         user.setVerificationCode(randomCode);
         user = userRepository.save(user);
         String siteURL = request.getRequestURL().toString().replace(request.getServletPath(),"");
-        Thread verificationCode = new VerificationSender(randomCode,
+        Thread verificationCodeSender = new VerificationSender(randomCode,
                 user,
                 siteURL,
                 mailSender);
-        verificationCode.start();
-
+        verificationCodeSender.start();
         return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
 
@@ -159,11 +151,22 @@ public class UserService {
                 .collect(Collectors.toSet());
     }
 
-    public EditUserDTO edinUser(EditUserDTO dto, int id) {
+    public EditUserDTO editUser(EditUserDTO dto, int id) {
         User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
-        String password = user.getPassword();
-        user = modelMapper.map(dto,User.class);
-        user.setPassword(password);
+        if (!dto.getFirstName().matches(UserUtility.nameRegex)){
+            throw new BadRequestException("Bad first name");
+        }
+        if (!dto.getLastName().matches(UserUtility.nameRegex)){
+            throw new BadRequestException("Bad last name");
+        }
+        dto.setPhoneNumber(UserUtility.validateAndConfigureNumber(dto.getPhoneNumber()));
+        if (!UserUtility.isEmailValid(dto.getEmail())){
+            throw new BadRequestException("Invalid email");
+        }
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setPhoneNumber(dto.getPhoneNumber());
+        user.setEmail(dto.getEmail());
         user = userRepository.save(user);
         return modelMapper.map(user,EditUserDTO.class);
     }
@@ -176,7 +179,8 @@ public class UserService {
     public Set<UserWithoutPasswordDTO> getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class)).collect(Collectors.toSet());
+                .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class))
+                .collect(Collectors.toSet());
     }
 
     public Set<UserWithoutPasswordDTO> getAllWorkmen() {
@@ -187,10 +191,7 @@ public class UserService {
     }
 
     public UserWithRating getUserRatebyId(int id) {
-        if (userRepository.findById(id).isEmpty()){
-            throw new NotFoundException("User not found");
-        }  
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
         UserWithRating userWithRating = modelMapper.map(user,UserWithRating.class);
         double rate = rateRepository.getAverageRatingForUser(id).orElse(0.00);
         BigDecimal bd = new BigDecimal(rate).setScale(2, RoundingMode.HALF_UP);

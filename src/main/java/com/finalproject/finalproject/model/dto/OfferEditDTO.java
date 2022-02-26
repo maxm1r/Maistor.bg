@@ -13,7 +13,6 @@ public class OfferEditDTO {
 
     private int id;
     private double pricePerHour;
-    private LocalDateTime offer_date;
     private int hoursNeeded;
     private int daysNeeded;
 }

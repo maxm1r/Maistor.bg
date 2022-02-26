@@ -1,5 +1,6 @@
 package com.finalproject.finalproject.utility;
 
+import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.model.dto.userDTOS.UserRegisterRequestDTO;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.User;
@@ -11,6 +12,8 @@ public class UserUtility {
     public static final String USER_CODE = "ACcb31887879ffbf75cf705f58b2e67ca4";
     public static final String PASS_CODE = "be2cda827f238084d45e1c6f0601fe6a";
     public static final String SENT_FROM = "+19124204643";
+    public static final String nameRegex = "^[A-Za-z]\\w{2,29}$";
+
 
     public static boolean passMatch(UserRegisterRequestDTO dto){
         if (dto.getPassword().equals(dto.getConfirmPassword())){
@@ -19,10 +22,10 @@ public class UserUtility {
         else return false;
     }
 
-    public static boolean isEmailValid(UserRegisterRequestDTO registerDTO) {
+    public static boolean isEmailValid(String registerDTO) {
         String pattern = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
         // RFC 5322
-        if (registerDTO.getEmail().matches(pattern)){
+        if (registerDTO.matches(pattern)){
             return true;
         }
         else return false;
@@ -43,5 +46,18 @@ public class UserUtility {
             return true;
         }
         else return false;
+    }
+
+    public static String validateAndConfigureNumber(String phoneNumber) {
+        if(!phoneNumber.matches("\\d+")  ||
+                (phoneNumber.length()!=10   &&  phoneNumber.length() != 13) ||
+                (phoneNumber.length() == 10 && !phoneNumber.startsWith("0")) ||
+                (phoneNumber.length() == 13 && !phoneNumber.startsWith("+359"))) {
+            throw new BadRequestException("Invalid phone number");
+        }
+        if (phoneNumber.length() == 10){
+            phoneNumber = phoneNumber.replaceFirst("0","+359");
+        }
+        return phoneNumber;
     }
 }
