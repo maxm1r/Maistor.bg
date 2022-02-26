@@ -8,6 +8,9 @@ import java.util.Set;
 
 public class UserUtility {
 
+    public static final String USER_CODE = "ACcb31887879ffbf75cf705f58b2e67ca4";
+    public static final String PASS_CODE = "be2cda827f238084d45e1c6f0601fe6a";
+    public static final String SENT_FROM = "+19124204643";
 
     public static boolean passMatch(UserRegisterRequestDTO dto){
         if (dto.getPassword().equals(dto.getConfirmPassword())){

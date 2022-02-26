@@ -32,7 +32,7 @@ public class SessionManager {
             throw new UnauthorizedException("You have to login!");
         }
         int userId = (int) session.getAttribute(USER_ID);
-        return  userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User not found"));
+        return  userRepository.findById(userId).orElseThrow(() -> new BadRequestException("You have to login!"));
 
 
     }

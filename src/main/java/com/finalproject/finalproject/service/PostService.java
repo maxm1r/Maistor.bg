@@ -7,12 +7,14 @@ import com.finalproject.finalproject.model.dto.postDTOS.PostFilterDTO;
 import com.finalproject.finalproject.model.dto.postDTOS.PostResponseDTO;
 import com.finalproject.finalproject.model.pojo.*;
 import com.finalproject.finalproject.model.repositories.*;
-import com.finalproject.finalproject.utility.UserUtility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +35,8 @@ public class PostService {
     CityRepository cityRepository;
     @Autowired
     OfferRepository offerRepository;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     public PostResponseDTO createPost(int id, PostDTO postDTO) {
         User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found"));
@@ -91,29 +95,35 @@ public class PostService {
         return postRepository.findAllByOwner(user);
     }
 
-//    public Object getPostsByFilter(PostFilterDTO postFilterDTO) {
-//        StringBuilder sql = new StringBuilder("SELECT * FROM post WHERE");
-//        boolean firstTime = true;
-//        if (postFilterDTO.getAssignedDateAfter() != null && postFilterDTO.getPostedDateAfter().isBefore(LocalDateTime.now().minusYears(1))) {
-//            if (firstTime==true){
-//                sql.append("WHERE(posted_date >"+java.sql.Date.valueOf(postFilterDTO.getPostedDateAfter().toLocalDate()) + ") ");
-//                firstTime=false;
-//            }
-//            else {
-//                sql.append("AND (posted_date >"+java.sql.Date.valueOf(postFilterDTO.getPostedDateAfter().toLocalDate()+ ") " ));
-//            }
-//        }
-//
-//        if (postFilterDTO.getAssignedDateAfter() != null && postFilterDTO.getPostedDateAfter().isBefore(LocalDateTime.now().minusYears(1))) {
-//            if (firstTime==true){
-//                sql.append("WHERE(posted_date >"+java.sql.Date.valueOf(postFilterDTO.getPostedDateAfter().toLocalDate()) + ") ");
-//                firstTime=false;
-//            }
-//            else {
-//                sql.append("AND (posted_date >"+java.sql.Date.valueOf(postFilterDTO.getPostedDateAfter().toLocalDate()+ ") " ));
-//            }
-//        }
-//    }
+    public List<PostResponseDTO> getPostsByFilter(PostFilterDTO postFilterDTO) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM post ");
+        boolean firstTime = true;
+        SimpleDateFormat dt = new SimpleDateFormat("yyyyy-MM-dd hh:mm");
+        if (postFilterDTO.getPostedDateAfter() != null && !postFilterDTO.getPostedDateAfter().isBefore(LocalDateTime.now().minusYears(1))) {
+            if (firstTime){
+                sql.append("WHERE(posted_date >="+ java.sql.Date.valueOf(dt.format(postFilterDTO.getPostedDateAfter()))+ ") ");
+                firstTime=false;
+            }
+            else {
+                sql.append("AND (posted_date >="+java.sql.Date.valueOf(dt.format(postFilterDTO.getPostedDateAfter()))+ ") ");
+            }
+        }
+
+        if (postFilterDTO.getPostedDateBefore() != null) {
+            if (firstTime){
+                sql.append("WHERE(posted_date >="+java.sql.Date.valueOf(postFilterDTO.getPostedDateAfter().toLocalDate()) + ") ");
+                firstTime=false;
+            }
+            else {
+                sql.append("AND (posted_date >="+java.sql.Date.valueOf(postFilterDTO.getPostedDateAfter().toLocalDate()+ ") " ));
+            }
+        }
+        List<Post> posts = jdbcTemplate.query(
+                String.valueOf(sql),
+                new BeanPropertyRowMapper(Post.class));
+        System.out.println(String.valueOf(sql));
+        return posts.stream().map(post -> modelMapper.map(post,PostResponseDTO.class)).collect(Collectors.toList());
+    }
 
 }
 

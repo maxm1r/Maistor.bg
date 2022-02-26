@@ -40,9 +40,9 @@ public class User {
     @ManyToOne
     @JoinColumn(name="role_id")
     private Role role;
-    @Column(name = "verification_code", length = 64)
+    @Column(name = "verification_code")
     private String verificationCode;
-    private boolean enabled;
+    private volatile boolean enabled;
 
 
 

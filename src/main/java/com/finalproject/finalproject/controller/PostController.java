@@ -62,8 +62,8 @@ public class PostController extends CustomExceptionHandler {
         return ResponseEntity.ok(dto);
     }
 
-//    @GetMapping("post/filter")
-//    public ResponseEntity<List<PostResponseDTO>> getPostsByFilter(@RequestBody PostFilterDTO postFilterDTO, HttpServletRequest request){
-//        return ResponseEntity.ok(postService.getPostsByFilter(postFilterDTO));
-//    }
+    @GetMapping("post/filter")
+    public ResponseEntity<List<PostResponseDTO>> getPostsByFilter(@RequestBody PostFilterDTO postFilterDTO, HttpServletRequest request){
+        return ResponseEntity.ok(postService.getPostsByFilter(postFilterDTO));
+    }
 }

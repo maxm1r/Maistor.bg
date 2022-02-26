@@ -33,6 +33,10 @@ public class UserController extends CustomExceptionHandler {
     public ResponseEntity<UserWithoutPasswordDTO> verify(@RequestParam("code") String code){
         return ResponseEntity.ok(userService.verify(code));
     }
+    @PostMapping("/verify")
+    public ResponseEntity<UserWithoutPasswordDTO> verifyBySMSCode(@RequestBody UserVerifyDTO dto){
+        return ResponseEntity.ok(userService.verify(dto.getVerificationCode()));
+    }
     @PostMapping("/login")
     public UserWithCommentDTO login(@RequestBody UserLoginRequestDTO user, HttpSession session, HttpServletRequest request){
         String email = user.getEmail();

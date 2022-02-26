@@ -1,41 +1,32 @@
 package com.finalproject.finalproject.service;
 
 import com.finalproject.finalproject.controller.SessionManager;
-import com.finalproject.finalproject.controller.UserController;
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
 import com.finalproject.finalproject.model.dto.*;
-import com.finalproject.finalproject.model.dto.userDTOS.UserRegisterRequestDTO;
-import com.finalproject.finalproject.model.dto.userDTOS.UserRegisterResponseDTO;
-import com.finalproject.finalproject.model.dto.userDTOS.UserWithRating;
-import com.finalproject.finalproject.model.dto.userDTOS.UserWithoutPasswordDTO;
+import com.finalproject.finalproject.model.dto.userDTOS.*;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.CategoryRepository;
 import com.finalproject.finalproject.model.repositories.RateRepository;
 import com.finalproject.finalproject.model.repositories.RolesRepository;
 import com.finalproject.finalproject.model.repositories.UserRepository;
-import com.finalproject.finalproject.utility.EmailSender;
+import com.finalproject.finalproject.utility.VerificationSender;
 import com.finalproject.finalproject.utility.UserUtility;
+import com.twilio.rest.api.v2010.account.Message;
 import lombok.SneakyThrows;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
@@ -98,13 +89,17 @@ public class UserService {
         User user = modelMapper.map(registerDTO,User.class);
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         user.setRole(roleRepository.getById(SessionManager.USER_ROLE_ID));
-        String randomCode = RandomString.make(64);
         user.setEnabled(false);
+        String randomCode = RandomString.make(8);
         user.setVerificationCode(randomCode);
         user = userRepository.save(user);
-        String siteURL = request.getRequestURL().toString();
-        Thread thread = new EmailSender(user,siteURL.replace(request.getServletPath(), ""),mailSender);
-        thread.start();
+        String siteURL = request.getRequestURL().toString().replace(request.getServletPath(),"");
+        Thread verificationCode = new VerificationSender(randomCode,
+                user,
+                siteURL,
+                mailSender);
+        verificationCode.start();
+
         return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
 
