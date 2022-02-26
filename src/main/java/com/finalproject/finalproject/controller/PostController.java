@@ -47,12 +47,12 @@ public class PostController extends CustomExceptionHandler {
     @PutMapping("/post/{id}")
     public ResponseEntity<PostResponseDTO> editPost(@RequestBody PostDTO postDTO,@PathVariable int id,HttpServletRequest request ){
         sessionManager.verifyUser(request);
-        return ResponseEntity.ok(postService.editPost(postDTO,id));
+        return ResponseEntity.ok(postService.editPost(postDTO,id, (Integer) request.getSession().getAttribute(SessionManager.USER_ID)));
     }
     @PostMapping("/post/offer")
     public ResponseEntity<PostResponseDTO> acceptOffer(@RequestParam(name = "postId") int postId, @RequestParam(name = "offerId") int offerId, HttpServletRequest request){
         sessionManager.verifyUser(request);
-        return ResponseEntity.ok(postService.acceptOffer(postId,offerId));
+        return ResponseEntity.ok(postService.acceptOffer(postId,offerId, (Integer) request.getSession().getAttribute(SessionManager.USER_ID)));
     }
 
     @GetMapping("/{id}/posts")

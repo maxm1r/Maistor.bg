@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,8 +26,8 @@ public class Post {
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "accepted_offer_id")
     private Offer acceptedOffer;
-    private LocalDateTime postedDate; // ?
-    private LocalDateTime assignedDate;
+    private LocalDate postedDate;
+    private LocalDate assignedDate;
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
