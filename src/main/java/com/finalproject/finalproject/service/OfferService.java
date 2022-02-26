@@ -95,8 +95,11 @@ public class OfferService {
         return offerRepository.findAllByUser(user).stream().map(offer -> modelMapper.map(offer,OfferDTO.class)).collect(Collectors.toList());
     }
 
-    public List<OfferDTO> findAllByPost(int id){
+    public List<OfferDTO> findAllByPost(int id,int userId){
         Post post = postRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        if (post.getOwner().getId() != userId){
+            throw new UnauthorizedException("User is not post owner");
+        }
         return offerRepository.findAllByPost(post).stream().map(offer -> modelMapper.map(offer,OfferDTO.class)).collect(Collectors.toList());
     }
 }

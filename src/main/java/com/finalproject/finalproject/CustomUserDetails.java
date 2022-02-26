@@ -1,17 +1,21 @@
 package com.finalproject.finalproject;
 
 import com.finalproject.finalproject.model.pojo.User;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-
+@Data
 public class CustomUserDetails implements UserDetails {
     private User user;
 
     @Override
     public boolean isEnabled() {
-        return user.isEnabled();
+        if (user.isPhoneEnabled() || user.isEmailEnabled()){
+            return true;
+        }
+        else return false;
     }
 
     @Override

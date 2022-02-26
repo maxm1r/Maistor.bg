@@ -32,14 +32,16 @@ public class SessionManager {
             throw new UnauthorizedException("You have to login!");
         }
         int userId = (int) session.getAttribute(USER_ID);
-        return  userRepository.findById(userId).orElseThrow(() -> new BadRequestException("You have to login!"));
-
-
+        User user =userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User not found"));
+        if (!user.isEmailEnabled() || !user.isPhoneEnabled()){
+            throw new BadRequestException("User not verified");
+        }
+        return user;
     }
     public void loginUser(HttpSession session, int id, HttpServletRequest request){
         session.setAttribute(LOGGED, true);
         session.setAttribute("logged_from",request.getRemoteAddr());
-        session.setAttribute(USER_ID, id);;
+        session.setAttribute(USER_ID, id);
         session.setMaxInactiveInterval(60*30);
     }
     public void verifyUser(HttpServletRequest request){

@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@JsonIgnoreProperties(value = {"hibernateLazyInitializer","handler"})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -40,9 +40,16 @@ public class User {
     @ManyToOne
     @JoinColumn(name="role_id")
     private Role role;
-    @Column(name = "verification_code")
-    private String verificationCode;
-    private volatile boolean enabled;
+    @Column(name = "email_verification_code")
+    private String emailVerificationCode;
+    @Column(name = "phone_verification_code")
+    private String phoneVerificationCode;
+    @Column(name = "email_enabled")
+    private volatile boolean emailEnabled;
+    @Column(name = "phone_enabled")
+    private volatile boolean phoneEnabled;
+    @Column(name = "creation_date")
+    private LocalDate creationDate;
 
 
 

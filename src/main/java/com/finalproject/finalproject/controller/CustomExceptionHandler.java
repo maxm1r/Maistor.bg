@@ -1,10 +1,8 @@
 package com.finalproject.finalproject.controller;
 
-import com.finalproject.finalproject.exceptions.BadRequestException;
-import com.finalproject.finalproject.exceptions.ForbiddenException;
-import com.finalproject.finalproject.exceptions.NotFoundException;
-import com.finalproject.finalproject.exceptions.UnauthorizedException;
+import com.finalproject.finalproject.exceptions.*;
 import com.finalproject.finalproject.model.dto.ExceptionDTO;
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;

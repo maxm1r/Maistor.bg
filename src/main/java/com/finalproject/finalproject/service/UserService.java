@@ -12,13 +12,11 @@ import com.finalproject.finalproject.model.repositories.CategoryRepository;
 import com.finalproject.finalproject.model.repositories.RateRepository;
 import com.finalproject.finalproject.model.repositories.RolesRepository;
 import com.finalproject.finalproject.model.repositories.UserRepository;
-import com.finalproject.finalproject.utility.VerificationSender;
 import com.finalproject.finalproject.utility.UserUtility;
 import lombok.SneakyThrows;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +29,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,6 +50,8 @@ public class UserService {
     private JavaMailSender mailSender;
     @Autowired
     private RolesRepository roleRepository;
+    @Autowired
+    private UserUtility util;
 
 
     @SneakyThrows
@@ -81,16 +82,17 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         user.setPhoneNumber(UserUtility.validateAndConfigureNumber(user.getPhoneNumber()));
         user.setRole(roleRepository.getById(SessionManager.USER_ROLE_ID));
-        user.setEnabled(false);
-        String randomCode = RandomString.make(8);
-        user.setVerificationCode(randomCode);
+        user.setEmailEnabled(false);
+        user.setPhoneEnabled(false);
+        String emailCode = RandomString.make(64);
+        String SMSCode = RandomString.make(6);
+        user.setEmailVerificationCode(emailCode);
+        user.setPhoneVerificationCode(SMSCode);
+        user.setCreationDate(LocalDate.now());
         user = userRepository.save(user);
-        String siteURL = request.getRequestURL().toString().replace(request.getServletPath(),"");
-        Thread verificationCodeSender = new VerificationSender(randomCode,
-                user,
-                siteURL,
-                mailSender);
-        verificationCodeSender.start();
+        String emailBodyLink = UserUtility.VERIFY_URL.concat(user.getEmailVerificationCode());
+        util.sendConfirmationEmail(user.getEmail(),emailBodyLink);
+        util.sendConfirmationSmS(user.getPhoneNumber(),SMSCode);
         return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
 
@@ -105,9 +107,6 @@ public class UserService {
         if(u == null){
             throw new UnauthorizedException("Wrong credentials");
         }
-        /*if(!u.isEnabled()){
-            throw new UnauthorizedException("User not verified");
-        }*/
         if(!passwordEncoder.matches(password, u.getPassword())){
             throw new UnauthorizedException("Wrong credentials");
         }
@@ -212,11 +211,19 @@ public class UserService {
         return holder.getName();
     }
 
-    public UserWithoutPasswordDTO verify(String code) {
-        User user = userRepository.findByVerificationCode(code).orElseThrow(()-> new BadRequestException("User not found"));
-        user.setVerificationCode(null);
-        user.setEnabled(true);
+    public UserWithoutPasswordDTO verifyEmail(String code) {
+        User user = userRepository.findByEmailVerificationCode(code).orElseThrow(()-> new BadRequestException("User not found"));
+        user.setEmailVerificationCode(null);
+        user.setEmailEnabled(true);
         user =userRepository.save(user);
+        return modelMapper.map(user,UserWithoutPasswordDTO.class);
+    }
+
+    public UserWithoutPasswordDTO verifyPhone(String verificationCode) {
+        User user = userRepository.findByPhoneVerificationCode(verificationCode).orElseThrow(()-> new BadRequestException("User not found"));
+        user.setPhoneVerificationCode(null);
+        user.setPhoneEnabled(true);
+        user = userRepository.save(user);
         return modelMapper.map(user,UserWithoutPasswordDTO.class);
     }
 }

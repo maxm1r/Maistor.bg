@@ -4,15 +4,37 @@ import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.model.dto.userDTOS.UserRegisterRequestDTO;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.User;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import lombok.Data;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.annotation.Bean;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.concurrent.Future;
+@EnableAsync
+@Service
+@Data
+@Configurable
 
 public class UserUtility {
 
+    @Autowired
+    private JavaMailSender mailSender;
     public static final String USER_CODE = "ACcb31887879ffbf75cf705f58b2e67ca4";
-    public static final String PASS_CODE = "be2cda827f238084d45e1c6f0601fe6a";
+    public static final String PASS_CODE = "5e0b739c8bf7711a06b2f39c4c508fdb";
     public static final String SENT_FROM = "+19124204643";
     public static final String nameRegex = "^[A-Za-z]\\w{2,29}$";
+    public static final String VERIFY_URL = "http://localhost:8888/verify?code=";
 
 
     public static boolean passMatch(UserRegisterRequestDTO dto){
@@ -49,7 +71,7 @@ public class UserUtility {
     }
 
     public static String validateAndConfigureNumber(String phoneNumber) {
-        if(!phoneNumber.matches("\\d+")  ||
+        if(phoneNumber.chars().anyMatch(Character::isLetter) ||
                 (phoneNumber.length()!=10   &&  phoneNumber.length() != 13) ||
                 (phoneNumber.length() == 10 && !phoneNumber.startsWith("0")) ||
                 (phoneNumber.length() == 13 && !phoneNumber.startsWith("+359"))) {
@@ -59,5 +81,30 @@ public class UserUtility {
             phoneNumber = phoneNumber.replaceFirst("0","+359");
         }
         return phoneNumber;
+    }
+    @Async
+    public void sendConfirmationEmail(String email , String text){
+        sendEmail(email,"Verify your account", "Please follow this link to activate your account: "+text);
+    }
+    @Async
+    public void sendConfirmationSmS(String phoneNumber, String code){
+        sendSMS(phoneNumber,"Your activation code for Maistor.bg is: "+code);
+    }
+    @Async
+    public void sendSMS(String phoneNumber, String body){
+        Twilio.init(UserUtility.USER_CODE,UserUtility.PASS_CODE);
+        Message message = Message.creator(
+                        new com.twilio.type.PhoneNumber(phoneNumber),
+                        new com.twilio.type.PhoneNumber(UserUtility.SENT_FROM),
+                        body)
+                .create();
+    }
+    @Async
+    public void sendEmail(String email, String subject, String text){
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(email);
+        msg.setSubject(subject);
+        msg.setText(text);
+        mailSender.send(msg);
     }
 }

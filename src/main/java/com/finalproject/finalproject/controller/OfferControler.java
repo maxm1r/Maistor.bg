@@ -7,6 +7,7 @@ import com.finalproject.finalproject.model.dto.commentDTOS.ReplyDTO;
 import com.finalproject.finalproject.model.pojo.Comment;
 import com.finalproject.finalproject.model.pojo.Offer;
 import com.finalproject.finalproject.service.OfferService;
+import com.finalproject.finalproject.service.UserService;
 import com.finalproject.finalproject.utility.UserUtility;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +51,9 @@ public class OfferControler {
     }
 
     @GetMapping("{id}/offers")
-    public ResponseEntity<List<OfferDTO>> getAllOffersForPost(@PathVariable int id){
-        List<OfferDTO> offers = offerService.findAllByPost(id);
+    public ResponseEntity<List<OfferDTO>> getAllOffersForPost(@PathVariable int id,HttpServletRequest request){
+        sessionManager.verifyUser(request);
+        List<OfferDTO> offers = offerService.findAllByPost(id, (Integer) request.getSession().getAttribute(SessionManager.USER_ID));
         return ResponseEntity.ok(offers);
     }
 }

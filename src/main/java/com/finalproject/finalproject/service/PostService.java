@@ -125,12 +125,8 @@ public class PostService {
         boolean firstTime = true;
         boolean isCategoryPresent = postFilterDTO.getCategoryList() != null && !postFilterDTO.getCategoryList().isEmpty();
         boolean isCityPresent = postFilterDTO.getCityList() != null && !postFilterDTO.getCityList().isEmpty();
-        if (isCategoryPresent){
-            sql.append("JOIN category AS c ON category_id = c.id \n");
-        }
-        if (isCityPresent){
-            sql.append("JOIN city AS ct ON city_id = ct.id \n");
-        }
+        sql.append("JOIN category AS c ON category_id = c.id \n");
+        sql.append("JOIN city AS ct ON city_id = ct.id \n");
         if (postFilterDTO.getPostedDateAfter() != null && !postFilterDTO.getPostedDateAfter().isBefore(LocalDate.now().minusYears(1))) {
             if (firstTime){
                 sql.append("WHERE(  (posted_date >='"+ java.sql.Date.valueOf(postFilterDTO.getPostedDateAfter())+ "') ");
