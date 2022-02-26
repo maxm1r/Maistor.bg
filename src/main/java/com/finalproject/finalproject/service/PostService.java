@@ -4,11 +4,16 @@ import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.model.dto.postDTOS.PostDTO;
 import com.finalproject.finalproject.model.dto.postDTOS.PostFilterDTO;
+import com.finalproject.finalproject.model.dto.postDTOS.PostForOfferResponseDTO;
 import com.finalproject.finalproject.model.dto.postDTOS.PostResponseDTO;
 import com.finalproject.finalproject.model.pojo.*;
 import com.finalproject.finalproject.model.repositories.*;
+import com.twilio.base.Page;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -17,6 +22,7 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -63,8 +69,19 @@ public class PostService {
         return modelMapper.map(post,PostResponseDTO.class);
     }
 
-    public Set<PostResponseDTO> getAllPosts() {
-        return postRepository.findAll().stream().map(post -> modelMapper.map(post,PostResponseDTO.class)).collect(Collectors.toSet());
+    public PageImpl<PostForOfferResponseDTO> getAllPosts(Optional<Integer> page, Optional<String> sortBy) {
+        List<PostForOfferResponseDTO> dtos = postRepository.findAll(PageRequest.of(page.orElse(0),5, Sort.Direction.DESC, sortBy.orElse("postedDate")))
+                .stream().map(post -> modelMapper.map(post,PostForOfferResponseDTO.class)).collect(Collectors.toList());
+        return  new PageImpl<>(dtos);
+    }
+
+    public PageImpl<PostForOfferResponseDTO> getPostsForCategory(String categoryName,Optional<Integer> page, Optional<String> sortBy){
+        Category category = categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new NotFoundException("Category not found!"));
+        List<PostForOfferResponseDTO> dtos = postRepository.findAllByCategory(category,PageRequest
+                        .of(page.orElse(0),5, Sort.Direction.DESC, sortBy.orElse("postedDate")))
+                .stream()
+                .map(post -> modelMapper.map(post,PostForOfferResponseDTO.class)).collect(Collectors.toList());
+        return new PageImpl<>(dtos);
     }
 
     public PostResponseDTO editPost(PostDTO postDTO, int id) {

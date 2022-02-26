@@ -14,7 +14,6 @@ import com.finalproject.finalproject.model.repositories.RolesRepository;
 import com.finalproject.finalproject.model.repositories.UserRepository;
 import com.finalproject.finalproject.utility.VerificationSender;
 import com.finalproject.finalproject.utility.UserUtility;
-import com.twilio.rest.api.v2010.account.Message;
 import lombok.SneakyThrows;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.FilenameUtils;
@@ -114,9 +113,9 @@ public class UserService {
         if(u == null){
             throw new UnauthorizedException("Wrong credentials");
         }
-        if(!u.isEnabled()){
+        /*if(!u.isEnabled()){
             throw new UnauthorizedException("User not verified");
-        }
+        }*/
         if(!passwordEncoder.matches(password, u.getPassword())){
             throw new UnauthorizedException("Wrong credentials");
         }
