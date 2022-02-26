@@ -27,7 +27,7 @@ public class CommentWithoutUserPasswordDTO {
         this.text = comment.getText();
         this.postedDate = comment.getPostedDate();
         this.ownerID = mapper.map(comment.getOwnerId(), UserWithoutPasswordDTO.class);
-        this.commentedUserID = mapper.map(comment.getOwnerId(), UserWithoutPasswordDTO.class);
+        this.commentedUserID = mapper.map(comment.getWorkmanId(), UserWithoutPasswordDTO.class);
 }
 
 }

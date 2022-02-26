@@ -68,6 +68,7 @@ public class PostService {
     }
 
     public PostResponseDTO editPost(PostDTO postDTO, int id) {
+        //TODO check if im the owner
         Post post = postRepository.findById(id).orElseThrow(()->new NotFoundException("Post not found"));
         if (postDTO.getDescription().isEmpty() || postDTO.getDescription().isBlank()){
             throw new BadRequestException("Bad Description");
@@ -79,6 +80,7 @@ public class PostService {
         return modelMapper.map(post,PostResponseDTO.class);
     }
     public PostResponseDTO acceptOffer(int postId, int offerId) {
+        //TODO check if im the owner
         Post post = postRepository.findById(postId).orElseThrow(()-> new NotFoundException("Post not found"));
         Offer offer = offerRepository.findById(offerId).orElseThrow(()-> new NotFoundException("Offer not found"));
         if (offer.getPost() != post){

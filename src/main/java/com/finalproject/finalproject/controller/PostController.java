@@ -55,7 +55,7 @@ public class PostController extends CustomExceptionHandler {
         return ResponseEntity.ok(postService.acceptOffer(postId,offerId));
     }
 
-    @GetMapping("/{id}/ posts")
+    @GetMapping("/{id}/posts")
     public ResponseEntity<List<PostResponseDTO>> getPostsForUser(@PathVariable int id){
         List<Post> posts = postService.getAllPostForUser(id);
         List<PostResponseDTO> dto = mapper.map(posts, new TypeToken<List<PostResponseDTO>>() {}.getType());
