@@ -213,13 +213,11 @@ public class UserService {
         Files.copy(file.getInputStream(), Path.of(holder.toURI()));
         Magic magic = new Magic();
         MagicMatch match = Magic.getMagicMatch(holder,false);
-        if ( !match.getMimeType().equalsIgnoreCase("image/png")){
-            if ( !match.getMimeType().equalsIgnoreCase("image/jpeg")) {
+        if ( !match.getMimeType().equalsIgnoreCase("image/png") && !match.getMimeType().equalsIgnoreCase("image/jpeg")){
                 throw new BadRequestException("You can only upload jpg and png files!");
-            }
         }
         User u = userRepository.findById(loggedUserId).orElseThrow(()-> new NotFoundException("User not found!"));;
-        u.setProfilePicture(name);
+        u.setProfilePicture(name+"." + ext);
         userRepository.save(u);
         return holder.getName();
     }
