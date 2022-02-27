@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -93,6 +94,7 @@ public class UserService {
         String emailBodyLink = UserUtility.VERIFY_URL.concat(user.getEmailVerificationCode());
         util.sendConfirmationEmail(user.getEmail(),emailBodyLink);
         util.sendConfirmationSmS(user.getPhoneNumber(),SMSCode);
+        login(user.getEmail(),user.getPassword());
         return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
 
@@ -103,16 +105,14 @@ public class UserService {
         if(password == null || password.isBlank()){
             throw new BadRequestException("Password is mandatory");
         }
-        User u = userRepository.findByEmail(email);
-        if(u == null){
-            throw new UnauthorizedException("Wrong credentials");
-        }
+        User u = userRepository.findByEmail(email).orElseThrow(()-> new UnauthorizedException("Wrong credentials"));
         if(!passwordEncoder.matches(password, u.getPassword())){
             throw new UnauthorizedException("Wrong credentials");
         }
         return u;
     }
 
+    @Transactional
     public UserWithoutPasswordDTO addCategory(int id, String categoryName) {
         User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
         Category category = categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new BadRequestException("Category not found"));
@@ -129,6 +129,7 @@ public class UserService {
         return  modelMapper.map(user, UserWithoutPasswordDTO.class);
     }
 
+    @Transactional
     public UserWithoutPasswordDTO removeCategory(int id, String categoryName){
         User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
         Category category = categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new BadRequestException("Category not found"));
@@ -142,8 +143,8 @@ public class UserService {
         return modelMapper.map(user, UserWithoutPasswordDTO.class);
     }
 
-    public Set<UserWithoutPasswordDTO> getAllUsersForCategory(String categoryName) {
-        Category category = categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new BadRequestException("Category not found"));
+    public Set<UserWithoutPasswordDTO> getAllWorkmenForCategory(String categoryName) {
+        Category category = categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new NotFoundException("Category not found"));
         return userRepository.getAllByCategoriesContaining(category)
                 .stream()
                 .map(user -> modelMapper.map(user,UserWithoutPasswordDTO.class))
@@ -151,7 +152,7 @@ public class UserService {
     }
 
     public EditUserDTO editUser(EditUserDTO dto, int id) {
-        User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found"));
         if (!dto.getFirstName().matches(UserUtility.nameRegex)){
             throw new BadRequestException("Bad first name");
         }
@@ -165,7 +166,15 @@ public class UserService {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setPhoneNumber(dto.getPhoneNumber());
+        user.setPhoneEnabled(false);
         user.setEmail(dto.getEmail());
+        user.setEmailEnabled(false);
+        String SMScode = RandomString.make(6);
+        String emailCode = RandomString.make(64);
+        user.setEmailVerificationCode(emailCode);
+        user.setPhoneVerificationCode(SMScode);
+        util.sendConfirmationEmail(user.getEmail(),emailCode);
+        util.sendConfirmationSmS(user.getPhoneNumber(),emailCode);
         user = userRepository.save(user);
         return modelMapper.map(user,EditUserDTO.class);
     }
@@ -189,13 +198,10 @@ public class UserService {
                 .collect(Collectors.toSet());
     }
 
-    public UserWithRating getUserRatebyId(int id) {
+    public UserWithRating getUserRateById(int id) {
         User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
         UserWithRating userWithRating = modelMapper.map(user,UserWithRating.class);
-        double rate = rateRepository.getAverageRatingForUser(id).orElse(0.00);
-        BigDecimal bd = new BigDecimal(rate).setScale(2, RoundingMode.HALF_UP);
-        userWithRating.setRating(bd.doubleValue());
-        return userWithRating;
+        return util.setRate(id,userWithRating);
     }
 
     @SneakyThrows

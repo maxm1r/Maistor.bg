@@ -48,7 +48,7 @@ public class PostService {
         Category category=categoryRepository.findByCategoryName(postDTO.getCategoryName())  .orElseThrow(()-> new NotFoundException("Category not found"));
         City city = cityRepository.findByCityName(postDTO.getCityName()).orElseThrow(()-> new NotFoundException("City not found"));
         if ( postDTO.getDescription().isEmpty() ||  postDTO.getDescription().isBlank()){
-            throw new BadRequestException("Bad description");
+            throw new BadRequestException("Description is mandatory");
         }
         Post post = new Post();
         post.setCategory(category);
@@ -62,7 +62,7 @@ public class PostService {
     public PostResponseDTO deletePost(int id, int userId){
         Post post = postRepository.findById(id).orElseThrow(()->new NotFoundException("Post not found"));
         if (post.getOwner().getId() != userId){
-            throw new BadRequestException("User can't delete this post");
+            throw new BadRequestException("User isn't post owner");
         }
         postRepository.deleteById(id);
         return modelMapper.map(post,PostResponseDTO.class);
@@ -86,10 +86,10 @@ public class PostService {
     public PostResponseDTO editPost(PostDTO postDTO, int id, int userId) {
         Post post = postRepository.findById(id).orElseThrow(()->new NotFoundException("Post not found"));
         if (postDTO.getDescription().isEmpty() || postDTO.getDescription().isBlank()){
-            throw new BadRequestException("Bad Description");
+            throw new BadRequestException("Description is mandatory");
         }
         if (userId != post.getOwner().getId()){
-            throw new UnauthorizedException("User is not post owner");
+            throw new UnauthorizedException("User isn't post owner");
         }
         post.setDescription(postDTO.getDescription());
         post.setCategory(categoryRepository.findByCategoryName(postDTO.getCategoryName()).orElseThrow(()-> new NotFoundException("Category not found")));
@@ -103,8 +103,8 @@ public class PostService {
         if (offer.getPost() != post){
             throw new BadRequestException("This offer doesn't belong to this post");
         }
-        if (offer.getUser().getId() != userId){
-            throw new UnauthorizedException("User is not offer owner");
+        if (post.getOwner().getId() != userId){
+            throw new UnauthorizedException("User is not post owner");
         }
         if (post.getAcceptedOffer() != null) {
             throw new BadRequestException("This post already has accepted offer");

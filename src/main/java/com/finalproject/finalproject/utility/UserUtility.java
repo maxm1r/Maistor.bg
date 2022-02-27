@@ -2,8 +2,11 @@ package com.finalproject.finalproject.utility;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.model.dto.userDTOS.UserRegisterRequestDTO;
+import com.finalproject.finalproject.model.dto.userDTOS.UserWithRating;
 import com.finalproject.finalproject.model.pojo.Category;
 import com.finalproject.finalproject.model.pojo.User;
+import com.finalproject.finalproject.model.repositories.RateRepository;
+import com.finalproject.finalproject.model.repositories.UserRepository;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import lombok.Data;
@@ -19,6 +22,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Set;
 import java.util.concurrent.Future;
 @EnableAsync
@@ -30,6 +35,8 @@ public class UserUtility {
 
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    private RateRepository rateRepository;
     public static final String USER_CODE = "ACcb31887879ffbf75cf705f58b2e67ca4";
     public static final String PASS_CODE = "5e0b739c8bf7711a06b2f39c4c508fdb";
     public static final String SENT_FROM = "+19124204643";
@@ -106,5 +113,12 @@ public class UserUtility {
         msg.setSubject(subject);
         msg.setText(text);
         mailSender.send(msg);
+    }
+
+    public UserWithRating setRate(int id, UserWithRating userWithRating) {
+        double rate = rateRepository.getAverageRatingForUser(id).orElse(0.00);
+        BigDecimal bd = new BigDecimal(rate).setScale(2, RoundingMode.HALF_UP);
+        userWithRating.setRating(bd.doubleValue());
+        return  userWithRating;
     }
 }

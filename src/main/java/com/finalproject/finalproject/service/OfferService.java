@@ -51,6 +51,7 @@ public class OfferService {
         if (post.getOwner() == user){
             throw new BadRequestException("User is post owner");
         }
+        //TODO workmen has the category of  post
         Offer offer = modelMapper.map(createOffer,Offer.class);
         offer.setOffer_date(LocalDateTime.now());
         offer.setPost(post);
@@ -59,6 +60,11 @@ public class OfferService {
         return modelMapper.map(offer,OfferDTO.class);
     }
     public OfferDTO editOffer(OfferEditDTO offerEditDTO, int id){
+        Offer offer = offerRepository.findById(offerEditDTO.getId()).orElseThrow(()-> new NotFoundException("Offer not found"));
+        User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found"));
+        if (offer.getUser() != user){
+            throw new UnauthorizedException("User isn't offer owner");
+        }
         if (offerEditDTO.getDaysNeeded()<0 || offerEditDTO.getDaysNeeded() >100){
             throw new BadRequestException("Invalid days needed");
         }
@@ -68,11 +74,6 @@ public class OfferService {
         if (offerEditDTO.getPricePerHour()<0){
             throw new BadRequestException("Invalid price per hour");
         }
-        Offer offer = offerRepository.findById(offerEditDTO.getId()).orElseThrow(()-> new NotFoundException("Offer not found"));
-        User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found"));
-        if (offer.getUser() != user){
-            throw new UnauthorizedException("User isn't offer owner");
-        }
         offer.setHoursNeeded(offerEditDTO.getHoursNeeded());
         offer.setPricePerHour(offerEditDTO.getPricePerHour());
         offer.setDaysNeeded(offerEditDTO.getDaysNeeded());
@@ -81,8 +82,8 @@ public class OfferService {
     }
 
     public OfferDTO deleteById(int offerId,int userId){
-        Offer offer = offerRepository.findById(offerId).orElseThrow(()->new BadRequestException("Offer not found"));
-        User user = userRepository.findById(userId).orElseThrow(()-> new BadRequestException("User not found"));
+        Offer offer = offerRepository.findById(offerId).orElseThrow(()->new NotFoundException("Offer not found"));
+        User user = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found"));
         if (offer.getUser() != user){
             throw new UnauthorizedException("User is not post owner");
         }
@@ -91,12 +92,12 @@ public class OfferService {
     }
 
     public List<OfferDTO> getAllOffersForUser(int id) {
-        User user = userRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found"));
         return offerRepository.findAllByUser(user).stream().map(offer -> modelMapper.map(offer,OfferDTO.class)).collect(Collectors.toList());
     }
 
     public List<OfferDTO> findAllByPost(int id,int userId){
-        Post post = postRepository.findById(id).orElseThrow(()-> new BadRequestException("User not found"));
+        Post post = postRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found"));
         if (post.getOwner().getId() != userId){
             throw new UnauthorizedException("User is not post owner");
         }

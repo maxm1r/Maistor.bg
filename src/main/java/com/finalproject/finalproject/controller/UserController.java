@@ -30,21 +30,18 @@ public class UserController extends CustomExceptionHandler {
         return ResponseEntity.ok(userService.register(registerDTO,request));
     }
     @GetMapping("/verify")
-    public ResponseEntity<UserWithoutPasswordDTO> verify(@RequestParam("code") String code){
+    public ResponseEntity<UserWithoutPasswordDTO> verifyEmail(@RequestParam("code") String code){
         return ResponseEntity.ok(userService.verifyEmail(code));
     }
     @PostMapping("/verify")
-    public ResponseEntity<UserWithoutPasswordDTO> verifyBySMSCode(@RequestBody UserVerifyDTO dto){
+    public ResponseEntity<UserWithoutPasswordDTO> verifyPhone(@RequestBody UserVerifyDTO dto){
         return ResponseEntity.ok(userService.verifyPhone(dto.getVerificationCode()));
     }
     @PostMapping("/login")
-    public UserWithCommentDTO login(@RequestBody UserLoginRequestDTO user, HttpSession session, HttpServletRequest request){
-        String email = user.getEmail();
-        String password = user.getPassword();
-        User u = userService.login(email, password);
+    public ResponseEntity<UserWithCommentDTO> login(@RequestBody UserLoginRequestDTO user, HttpSession session, HttpServletRequest request){
+        User u = userService.login(user.getEmail(),user.getPassword());
         sessionManager.loginUser(session,u.getId(),request);
-        UserWithCommentDTO dto = modelMapper.map(u, UserWithCommentDTO.class);
-        return dto;
+        return ResponseEntity.ok( modelMapper.map(u, UserWithCommentDTO.class));
     }
 
     @PostMapping("/user/category")
@@ -61,7 +58,7 @@ public class UserController extends CustomExceptionHandler {
 
     @GetMapping("/user/category/{categoryName}")
     public ResponseEntity<Set<UserWithoutPasswordDTO>> getUsersForCategory(@PathVariable CategoryNameDTO categoryName){
-        return  ResponseEntity.ok(userService.getAllUsersForCategory(categoryName.getCategoryName()));
+        return  ResponseEntity.ok(userService.getAllWorkmenForCategory(categoryName.getCategoryName()));
     }
 
     @GetMapping("/user/{id}")
@@ -74,14 +71,14 @@ public class UserController extends CustomExceptionHandler {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("user/all/workmans")
+    @GetMapping("user/all/workmen")
     public ResponseEntity<Set<UserWithoutPasswordDTO>> getAllWorkmen(){
         return ResponseEntity.ok(userService.getAllWorkmen());
     }
 
     @GetMapping("/user/rate/{id}")
     public ResponseEntity<UserWithRating> getUserRateById(@PathVariable int id){
-        return ResponseEntity.ok(userService.getUserRatebyId(id));
+        return ResponseEntity.ok(userService.getUserRateById(id));
     }
 
     @PutMapping("/user")

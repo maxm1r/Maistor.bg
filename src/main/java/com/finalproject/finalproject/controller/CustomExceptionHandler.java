@@ -21,6 +21,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return dto;
     }
 
+
+
     @ExceptionHandler(value = {UnauthorizedException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody

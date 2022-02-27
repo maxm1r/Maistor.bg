@@ -26,7 +26,7 @@ public class CommentService {
     private UserRepository userRepository;
 
     public CommentWithoutUserPasswordDTO addComment(CommentDTO commentDTO, Integer userId, Integer workmanID){
-        if (userId ==null ){
+        if (userId == null){
             throw new UnauthorizedException("Please login");
         }
         if (commentDTO.getText().isEmpty() || commentDTO.getText().isBlank()){
@@ -53,25 +53,19 @@ public class CommentService {
         return commentRepository.findById(id).orElseThrow(()-> new NotFoundException("Comment not found!"));
     }
 
-    public boolean deleteCommentById(Integer id) {
+    public void deleteCommentById(Integer id) {
         try {
             commentRepository.deleteById(id);
-            return true;
         } catch (Exception e) {
-            return false;
+            throw new NotFoundException("Comment not found");
         }
 
     }
 
     public Comment edit(Comment comment){
-        Optional<Comment> opt = commentRepository.findById(comment.getId());
-        if(opt.isPresent()){
-            commentRepository.save(comment);
-            return comment;
-        }
-        else{
-            throw new NotFoundException("Comment not found");
-        }
+        commentRepository.findById(comment.getId()).orElseThrow(()-> new NotFoundException("Comment not found"));
+        commentRepository.save(comment);
+        return comment;
     }
 
     public List<Comment> getAllByOwner(int id){
