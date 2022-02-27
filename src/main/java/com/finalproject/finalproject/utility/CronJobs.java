@@ -43,7 +43,7 @@ public class CronJobs {
             user.setPhoneVerificationCode(token);
             user=userRepository.save(user);
             util.sendSMS(user.getPhoneNumber(),
-                    "You have "+daysLeft+"to verify your account. Your confirmation code for Maistor.bg is:"+token);
+                    "You have "+daysLeft+" to verify your account. Your confirmation code for Maistor.bg is:"+token);
         }
     }
     @Scheduled(cron = "0 0 0 * * *")

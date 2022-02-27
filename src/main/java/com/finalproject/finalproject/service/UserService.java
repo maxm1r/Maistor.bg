@@ -1,6 +1,6 @@
 package com.finalproject.finalproject.service;
 
-import com.finalproject.finalproject.controller.SessionManager;
+import com.finalproject.finalproject.utility.SessionManager;
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
@@ -53,7 +53,8 @@ public class UserService {
     private RolesRepository roleRepository;
     @Autowired
     private UserUtility util;
-
+    @Autowired
+    private SessionManager sessionManager;
 
     @SneakyThrows
     public UserRegisterResponseDTO register(UserRegisterRequestDTO registerDTO, HttpServletRequest request) {
@@ -94,7 +95,8 @@ public class UserService {
         String emailBodyLink = UserUtility.VERIFY_URL.concat(user.getEmailVerificationCode());
         util.sendConfirmationEmail(user.getEmail(),emailBodyLink);
         util.sendConfirmationSmS(user.getPhoneNumber(),SMSCode);
-        login(user.getEmail(),user.getPassword());
+        login(user.getEmail(),registerDTO.getPassword());
+        sessionManager.loginUser(user.getId(),request);
         return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
 
