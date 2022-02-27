@@ -15,6 +15,8 @@ import com.finalproject.finalproject.model.repositories.UserRepository;
 import com.finalproject.finalproject.utility.UserUtility;
 import lombok.SneakyThrows;
 import net.bytebuddy.utility.RandomString;
+import net.sf.jmimemagic.Magic;
+import net.sf.jmimemagic.MagicMatch;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -211,8 +213,13 @@ public class UserService {
         String ext = FilenameUtils.getExtension(file.getOriginalFilename());
         File holder = new File("uploads" + File.separator + name + "." + ext);
         Files.copy(file.getInputStream(), Path.of(holder.toURI()));
+        Magic magic = new Magic();
+        MagicMatch match = Magic.getMagicMatch(holder,false);
+        if ( !match.getMimeType().equalsIgnoreCase("image/png") && !match.getMimeType().equalsIgnoreCase("image/jpeg")){
+                throw new BadRequestException("You can only upload jpg and png files!");
+        }
         User u = userRepository.findById(loggedUserId).orElseThrow(()-> new NotFoundException("User not found!"));;
-        u.setProfilePicture(name);
+        u.setProfilePicture(name+"." + ext);
         userRepository.save(u);
         return holder.getName();
     }
