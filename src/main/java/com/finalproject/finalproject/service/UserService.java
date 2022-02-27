@@ -70,7 +70,7 @@ public class UserService {
         if (!UserUtility.isEmailValid(registerDTO.getEmail())){
             throw new BadRequestException("Invalid email");
         }
-        if (userRepository.findByEmail(registerDTO.getEmail()) != null){
+        if (userRepository.findByEmail(registerDTO.getEmail()).isPresent()){
             throw  new BadRequestException("User already exist");
         }
         if (userRepository.findUserByPhoneNumber(registerDTO.getPhoneNumber()) != null){
