@@ -74,7 +74,8 @@ public class UserService {
         if (userRepository.findByEmail(registerDTO.getEmail()).isPresent()){
             throw  new BadRequestException("User already exist");
         }
-        if (userRepository.findUserByPhoneNumber(registerDTO.getPhoneNumber()) != null){
+        String phoneNumber = UserUtility.validateAndConfigureNumber(registerDTO.getPhoneNumber());
+        if (userRepository.findUserByPhoneNumber(phoneNumber) != null){
             throw new BadRequestException("The phone is already registered!");
         }
         if (!UserUtility.validPass(registerDTO)){
@@ -82,7 +83,7 @@ public class UserService {
         }
         User user = modelMapper.map(registerDTO,User.class);
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
-        user.setPhoneNumber(UserUtility.validateAndConfigureNumber(user.getPhoneNumber()));
+        user.setPhoneNumber(phoneNumber);
         user.setRole(roleRepository.getById(SessionManager.USER_ROLE_ID));
         user.setEmailEnabled(false);
         user.setPhoneEnabled(false);

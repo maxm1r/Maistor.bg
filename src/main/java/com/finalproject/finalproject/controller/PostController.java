@@ -41,7 +41,6 @@ public class PostController extends CustomExceptionHandler {
     }
     @GetMapping("/posts")
     public PageImpl<PostForOfferResponseDTO> getAllPosts(@RequestParam Optional<Integer> page, @RequestParam Optional<String> sortBy,HttpServletRequest request){
-        sessionManager.verifyUser(request);
         return postService.getAllPosts(page,sortBy);
     }
 

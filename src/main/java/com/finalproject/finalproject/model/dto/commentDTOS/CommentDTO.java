@@ -13,5 +13,5 @@ public class CommentDTO {
 
     private int id;
     private String text;
-    private Optional<Integer> parentCommentId = null;
+    private Optional<Integer> parentCommentId;
 }

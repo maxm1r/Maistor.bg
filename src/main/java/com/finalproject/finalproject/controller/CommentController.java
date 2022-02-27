@@ -1,5 +1,6 @@
 package com.finalproject.finalproject.controller;
 
+import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.ForbiddenException;
 import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.model.dto.commentDTOS.CommentDTO;
@@ -56,39 +57,29 @@ public class CommentController {
     @DeleteMapping("/comments/{id}")
         public CommentWithoutUserPasswordDTO delete(@PathVariable int id,HttpServletRequest request){
         sessionManager.verifyUser(request);
-        int commentId= commentService.getCommentById(id).getOwnerId().getId();
+        int commentOwnerId= commentService.getCommentById(id).getOwnerId().getId();
         Comment comment = new Comment();
-
         comment.setId(id);
-        if((Integer) request.getSession().getAttribute(SessionManager.USER_ID) != commentId){
+        if((Integer) request.getSession().getAttribute(SessionManager.USER_ID) != commentOwnerId){
             throw new ForbiddenException("You are not the owner of this comment!");
         }
-
         CommentWithoutUserPasswordDTO dto = new CommentWithoutUserPasswordDTO(commentService.getCommentById(id));
         commentService.deleteCommentById(id);
         return dto;
     }
 
-    @PutMapping("/{id}/comments")
-    public ResponseEntity<CommentDTO> edit(@RequestBody CommentDTO commentDTO, @PathVariable int id, HttpServletRequest request){
+    @PutMapping("/comments")
+    public ResponseEntity<CommentDTO> edit(@RequestBody CommentDTO commentDTO, HttpServletRequest request){
         sessionManager.verifyUser(request);
         Comment comment = commentService.getCommentById(commentDTO.getId());
         if((Integer) request.getSession().getAttribute(SessionManager.USER_ID) != comment.getOwnerId().getId()){
             throw new ForbiddenException("You are not the owner of this comment!");
         }
-        if (comment.getWorkmanId().getId() != id){
-            throw new ForbiddenException("You cannot edit the commented worker");
+        if (commentDTO.getText() == null || commentDTO.getText().isEmpty() || commentDTO.getText().isBlank()){
+            throw new BadRequestException("There is no text in the comment body!");
         }
-
-        Integer userId = (Integer) request.getSession().getAttribute(SessionManager.USER_ID);
-        Optional<User> u = userRepository.findById(userId);
-        comment.setId(commentDTO.getId());
-        comment.setOwnerId(u.orElseThrow(()-> new NotFoundException("User not found!")));
-        comment.setWorkmanId(userRepository.getById(id));
-        comment.setPostedDate(LocalDateTime.now());
         comment.setText(commentDTO.getText());
         commentService.edit(comment);
-
         CommentDTO dto = mapper.map(comment, CommentDTO.class);
         return ResponseEntity.ok(dto);
     }
@@ -101,9 +92,9 @@ public class CommentController {
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<List<CommentDTO>> getCommentsForUser(@PathVariable int id){
+    public ResponseEntity<List<ReplyDTO>> getCommentsForUser(@PathVariable int id){
         List<Comment> comments = commentService.getAllByOwner(id);
-        List<CommentDTO> dtos = mapper.map(comments, new TypeToken<List<CommentDTO>>(){}.getType());
+        List<ReplyDTO> dtos = mapper.map(comments, new TypeToken<List<ReplyDTO>>(){}.getType());
         return ResponseEntity.ok(dtos);
     }
 }

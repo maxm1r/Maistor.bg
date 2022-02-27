@@ -29,7 +29,7 @@ public class CommentService {
         if (userId == null){
             throw new UnauthorizedException("Please login");
         }
-        if (commentDTO.getText().isEmpty() || commentDTO.getText().isBlank()){
+        if (commentDTO.getText() == null || commentDTO.getText().isEmpty() || commentDTO.getText().isBlank()){
             throw new BadRequestException("There is no text in the comment body!");
         }
         User u = userRepository.findById(workmanID).orElseThrow(()-> new NotFoundException("User not found!"));
@@ -63,6 +63,7 @@ public class CommentService {
     }
 
     public Comment edit(Comment comment){
+
         commentRepository.findById(comment.getId()).orElseThrow(()-> new NotFoundException("Comment not found"));
         commentRepository.save(comment);
         return comment;

@@ -12,7 +12,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "city")
+@Table(name = "cities")
 public class City {
 
     @Id

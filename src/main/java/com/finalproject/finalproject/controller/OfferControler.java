@@ -32,9 +32,9 @@ public class OfferControler {
     }
 
     @DeleteMapping("/offers")
-    public ResponseEntity<OfferDTO> deleteOffer(@RequestParam (name = "id") int postId, HttpServletRequest request){
+    public ResponseEntity<OfferDTO> deleteOffer(@RequestParam (name = "id") int offerId, HttpServletRequest request){
         sessionManager.verifyUser(request);
-        return ResponseEntity.ok(offerService.deleteById(postId, (Integer) request.getSession().getAttribute(SessionManager.USER_ID)));
+        return ResponseEntity.ok(offerService.deleteById(offerId, (Integer) request.getSession().getAttribute(SessionManager.USER_ID)));
     }
 
     @GetMapping("/offers")

@@ -14,7 +14,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "category")
+@Table(name = "categories")
 public class Category {
 
     @Id

@@ -38,7 +38,7 @@ public class UserUtility {
     @Autowired
     private RateRepository rateRepository;
     public static final String USER_CODE = "ACcb31887879ffbf75cf705f58b2e67ca4";
-    public static final String PASS_CODE = "5e0b739c8bf7711a06b2f39c4c508fdb";
+    public static final String PASS_CODE = "834217e1c37c3e716c254ba32638d3d1";
     public static final String SENT_FROM = "+19124204643";
     public static final String nameRegex = "^[A-Za-z]\\w{2,29}$";
     public static final String VERIFY_URL = "http://localhost:8888/verify?code=";

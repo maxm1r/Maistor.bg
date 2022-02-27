@@ -12,5 +12,6 @@ public class ReplyDTO {
     private int id;
     private String text;
     private String ownerEmail;
+    private int parentCommentId;
 
 }

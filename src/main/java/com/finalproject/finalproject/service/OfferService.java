@@ -52,11 +52,13 @@ public class OfferService {
         if (post.getOwner() == user){
             throw new BadRequestException("User is post owner");
         }
-        if(UserUtility.userHasCategory(user,post.getCategory().getCategoryName())){
+        if(!UserUtility.userHasCategory(user,post.getCategory().getCategoryName())){
             throw new BadRequestException("User isn't qualified for this job");
         }
-        //TODO workmen has the category of  post
-        Offer offer = modelMapper.map(createOffer,Offer.class);
+        Offer offer = new Offer();
+        offer.setDaysNeeded(createOffer.getDaysNeeded());
+        offer.setPricePerHour(createOffer.getPricePerHour());
+        offer.setHoursNeeded(createOffer.getHoursNeeded());
         offer.setOffer_date(LocalDateTime.now());
         offer.setPost(post);
         offer.setUser(user);
@@ -78,6 +80,9 @@ public class OfferService {
         if (offerEditDTO.getPricePerHour()<0){
             throw new BadRequestException("Invalid price per hour");
         }
+        if (offer.getPost().getAcceptedOffer() != null && offer.getPost().getAcceptedOffer() == offer){
+            throw new BadRequestException("Accepted offers can't be edited");
+        }
         offer.setHoursNeeded(offerEditDTO.getHoursNeeded());
         offer.setPricePerHour(offerEditDTO.getPricePerHour());
         offer.setDaysNeeded(offerEditDTO.getDaysNeeded());
@@ -89,7 +94,10 @@ public class OfferService {
         Offer offer = offerRepository.findById(offerId).orElseThrow(()->new NotFoundException("Offer not found"));
         User user = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found"));
         if (offer.getUser() != user){
-            throw new UnauthorizedException("User is not post owner");
+            throw new UnauthorizedException("User is not offer owner");
+        }
+        if (offer.getPost().getAcceptedOffer() != null && offer.getPost().getAcceptedOffer() == offer){
+            throw new BadRequestException("Accepted offers can't be deleted");
         }
         offerRepository.deleteById(offerId);
         return modelMapper.map(offer,OfferDTO.class);
@@ -100,8 +108,8 @@ public class OfferService {
         return offerRepository.findAllByUser(user).stream().map(offer -> modelMapper.map(offer,OfferDTO.class)).collect(Collectors.toList());
     }
 
-    public List<OfferDTO> findAllByPost(int id,int userId){
-        Post post = postRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found"));
+    public List<OfferDTO> findAllByPost(int postId,int userId){
+        Post post = postRepository.findById(postId).orElseThrow(()-> new NotFoundException("Post not found"));
         if (post.getOwner().getId() != userId){
             throw new UnauthorizedException("User is not post owner");
         }

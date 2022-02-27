@@ -47,7 +47,7 @@ public class PostService {
         User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found"));
         Category category=categoryRepository.findByCategoryName(postDTO.getCategoryName())  .orElseThrow(()-> new NotFoundException("Category not found"));
         City city = cityRepository.findByCityName(postDTO.getCityName()).orElseThrow(()-> new NotFoundException("City not found"));
-        if ( postDTO.getDescription().isEmpty() ||  postDTO.getDescription().isBlank()){
+        if (postDTO.getDescription() == null || postDTO.getDescription().isBlank() || postDTO.getDescription().isEmpty()){
             throw new BadRequestException("Description is mandatory");
         }
         Post post = new Post();
@@ -85,7 +85,7 @@ public class PostService {
 
     public PostResponseDTO editPost(PostDTO postDTO, int id, int userId) {
         Post post = postRepository.findById(id).orElseThrow(()->new NotFoundException("Post not found"));
-        if (postDTO.getDescription().isEmpty() || postDTO.getDescription().isBlank()){
+        if (postDTO.getDescription() == null || postDTO.getDescription().isEmpty() || postDTO.getDescription().isBlank()){
             throw new BadRequestException("Description is mandatory");
         }
         if (userId != post.getOwner().getId()){
@@ -121,12 +121,12 @@ public class PostService {
     }
 
     public List<PostResponseDTO> getPostsByFilter(PostFilterDTO postFilterDTO) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM post \n");
+        StringBuilder sql = new StringBuilder("SELECT * FROM posts \n");
         boolean firstTime = true;
         boolean isCategoryPresent = postFilterDTO.getCategoryList() != null && !postFilterDTO.getCategoryList().isEmpty();
         boolean isCityPresent = postFilterDTO.getCityList() != null && !postFilterDTO.getCityList().isEmpty();
-        sql.append("JOIN category AS c ON category_id = c.id \n");
-        sql.append("JOIN city AS ct ON city_id = ct.id \n");
+        sql.append("JOIN categories AS c ON category_id = c.id \n");
+        sql.append("JOIN cities AS ct ON city_id = ct.id \n");
         if (postFilterDTO.getPostedDateAfter() != null && !postFilterDTO.getPostedDateAfter().isBefore(LocalDate.now().minusYears(1))) {
             if (firstTime){
                 sql.append("WHERE(  (posted_date >='"+ java.sql.Date.valueOf(postFilterDTO.getPostedDateAfter())+ "') ");
@@ -190,9 +190,7 @@ public class PostService {
             }
             sql.append(") ");
         }
-        if (!firstTime){
-            sql.append(") ");
-        }
+
         System.out.println(String.valueOf(sql));
         List<PostResponseDTO> posts = jdbcTemplate.query(
                 String.valueOf(sql),
