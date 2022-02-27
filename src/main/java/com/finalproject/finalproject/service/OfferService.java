@@ -12,6 +12,7 @@ import com.finalproject.finalproject.model.pojo.User;
 import com.finalproject.finalproject.model.repositories.OfferRepository;
 import com.finalproject.finalproject.model.repositories.PostRepository;
 import com.finalproject.finalproject.model.repositories.UserRepository;
+import com.finalproject.finalproject.utility.UserUtility;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,9 @@ public class OfferService {
         }
         if (post.getOwner() == user){
             throw new BadRequestException("User is post owner");
+        }
+        if(UserUtility.userHasCategory(user,post.getCategory().getCategoryName())){
+            throw new BadRequestException("User isn't qualified for this job");
         }
         //TODO workmen has the category of  post
         Offer offer = modelMapper.map(createOffer,Offer.class);

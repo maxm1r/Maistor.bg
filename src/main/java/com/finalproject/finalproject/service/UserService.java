@@ -1,6 +1,6 @@
 package com.finalproject.finalproject.service;
 
-import com.finalproject.finalproject.controller.SessionManager;
+import com.finalproject.finalproject.utility.SessionManager;
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.NotFoundException;
 import com.finalproject.finalproject.exceptions.UnauthorizedException;
@@ -26,8 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -53,7 +51,8 @@ public class UserService {
     private RolesRepository roleRepository;
     @Autowired
     private UserUtility util;
-
+    @Autowired
+    private SessionManager sessionManager;
 
     @SneakyThrows
     public UserRegisterResponseDTO register(UserRegisterRequestDTO registerDTO, HttpServletRequest request) {
@@ -70,7 +69,7 @@ public class UserService {
         if (!UserUtility.isEmailValid(registerDTO.getEmail())){
             throw new BadRequestException("Invalid email");
         }
-        if (userRepository.findByEmail(registerDTO.getEmail()) != null){
+        if (userRepository.findByEmail(registerDTO.getEmail()).isPresent()){
             throw  new BadRequestException("User already exist");
         }
         if (userRepository.findUserByPhoneNumber(registerDTO.getPhoneNumber()) != null){
@@ -94,7 +93,8 @@ public class UserService {
         String emailBodyLink = UserUtility.VERIFY_URL.concat(user.getEmailVerificationCode());
         util.sendConfirmationEmail(user.getEmail(),emailBodyLink);
         util.sendConfirmationSmS(user.getPhoneNumber(),SMSCode);
-        login(user.getEmail(),user.getPassword());
+        login(user.getEmail(),registerDTO.getPassword());
+        sessionManager.loginUser(user.getId(),request);
         return modelMapper.map(user,UserRegisterResponseDTO.class);
     }
 

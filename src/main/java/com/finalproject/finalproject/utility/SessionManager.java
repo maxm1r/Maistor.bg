@@ -1,4 +1,4 @@
-package com.finalproject.finalproject.controller;
+package com.finalproject.finalproject.utility;
 
 import com.finalproject.finalproject.exceptions.BadRequestException;
 import com.finalproject.finalproject.exceptions.ForbiddenException;
@@ -38,7 +38,8 @@ public class SessionManager {
         }
         return user;
     }
-    public void loginUser(HttpSession session, int id, HttpServletRequest request){
+    public void loginUser(int id, HttpServletRequest request){
+        HttpSession session = request.getSession();
         session.setAttribute(LOGGED, true);
         session.setAttribute("logged_from",request.getRemoteAddr());
         session.setAttribute(USER_ID, id);
